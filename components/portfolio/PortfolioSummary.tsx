@@ -57,6 +57,13 @@ function DonutChart({ summaries }: { summaries: CategorySummary[] }) {
   );
 }
 
+function fmtUSD(v: number) {
+  return `$${v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+function fmtTWD(v: number) {
+  return `NT$${Math.round(v).toLocaleString()}`;
+}
+
 export function PortfolioSummary({
   categorySummaries,
   totalValuation,
@@ -66,6 +73,28 @@ export function PortfolioSummary({
   hideAmounts = false,
 }: PortfolioSummaryProps) {
   const active = categorySummaries.filter((s) => s.categoryValuation > 0);
+
+  // Aggregate cost & P&L across all categories
+  const hasCostData = categorySummaries.some((c) => c.categoryCostBasis != null);
+  const totalCostUSD = categorySummaries.reduce((s, c) => s + (c.categoryCostBasis ?? 0), 0);
+  const totalPLUSD   = categorySummaries.reduce((s, c) => s + (c.categoryUnrealizedPL    ?? 0), 0);
+  const totalPLTWD   = categorySummaries.reduce((s, c) => s + (c.categoryUnrealizedPLTWD ?? 0), 0);
+  // Derive TWD cost using implied exchange rate from current valuation pair
+  const impliedRate  = totalValuation > 0 ? totalValuationTWD / totalValuation : 1;
+  const totalCostTWD = totalCostUSD * impliedRate;
+  const totalPLPct   = totalCostUSD > 0 ? (totalPLUSD / totalCostUSD) * 100 : 0;
+
+  const plPositive   = totalPLUSD >= 0;
+  const plColorClass = plPositive ? 'text-green-500' : 'text-red-500';
+  const sign         = plPositive ? '+' : '';
+
+  // Primary / secondary currency for cost & P&L
+  const [primaryCost, secondaryCost] = preferredCurrency === 'TWD'
+    ? [fmtTWD(totalCostTWD), fmtUSD(totalCostUSD)]
+    : [fmtUSD(totalCostUSD), fmtTWD(totalCostTWD)];
+  const [primaryPL, secondaryPL] = preferredCurrency === 'TWD'
+    ? [fmtTWD(totalPLTWD), fmtUSD(totalPLUSD)]
+    : [fmtUSD(totalPLUSD), fmtTWD(totalPLTWD)];
 
   return (
     <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6">
@@ -106,8 +135,9 @@ export function PortfolioSummary({
             </div>
           </div>
 
-          {/* Legend */}
+          {/* Legend + Cost/PL */}
           <div className="flex-1 grid grid-cols-1 gap-2 min-w-0">
+            {/* Category rows */}
             {active.map((cat) => (
               <div key={cat.market} className="flex items-center gap-2">
                 <span
@@ -122,6 +152,41 @@ export function PortfolioSummary({
                 </span>
               </div>
             ))}
+
+            {/* Cost & P&L — only when transaction records exist */}
+            {hasCostData && !isLoading && (
+              <div className="border-t border-zinc-100 dark:border-zinc-800 pt-2 mt-1 space-y-1.5">
+                {/* Cost row */}
+                <div className="flex items-start justify-between gap-2">
+                  <span className="text-xs text-zinc-400 dark:text-zinc-500 pt-0.5 shrink-0">成本</span>
+                  <div className="text-right tabular-nums">
+                    <div className="text-sm text-zinc-600 dark:text-zinc-400">
+                      {hideAmounts ? AMOUNT_MASK : primaryCost}
+                    </div>
+                    <div className="text-xs text-zinc-400 dark:text-zinc-500">
+                      {hideAmounts ? AMOUNT_MASK : secondaryCost}
+                    </div>
+                  </div>
+                </div>
+
+                {/* P&L row */}
+                <div className="flex items-start justify-between gap-2">
+                  <span className="text-xs text-zinc-400 dark:text-zinc-500 pt-0.5 shrink-0">損益</span>
+                  <div className={`text-right tabular-nums ${plColorClass}`}>
+                    <div className="text-sm">
+                      {hideAmounts ? AMOUNT_MASK : `${sign}${primaryPL}`}
+                      {/* Percentage stays visible even when amounts are hidden */}
+                      <span className="text-xs opacity-70 ml-1">
+                        ({sign}{totalPLPct.toFixed(1)}%)
+                      </span>
+                    </div>
+                    <div className="text-xs opacity-80">
+                      {hideAmounts ? AMOUNT_MASK : `${sign}${secondaryPL}`}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
