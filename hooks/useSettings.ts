@@ -11,8 +11,10 @@ export function useSettings() {
 
   useEffect(() => {
     const initial = loadSettings();
-    settingsRef.current = initial;
-    setSettings(initial);
+    // hideAmounts is session-only — always reset to false on page load
+    const sessionInitial = { ...initial, hideAmounts: false };
+    settingsRef.current = sessionInitial;
+    setSettings(sessionInitial);
 
     // Sync when any other useSettings instance calls saveSettings()
     const onExternalChange = (e: Event) => {
