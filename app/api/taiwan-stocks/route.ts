@@ -5,7 +5,7 @@ import { TAIWAN_SYMBOL_MAP, TAIWAN_STOCKS } from '@/lib/constants';
 
 // Build reverse map: TWSE key → display name
 const KEY_TO_NAME: Record<string, string> = Object.fromEntries(
-  Object.entries(TAIWAN_SYMBOL_MAP).map(([sym, meta]) => [meta.key, meta.name])
+  Object.entries(TAIWAN_SYMBOL_MAP).map(([_sym, meta]) => [meta.key, meta.name])
 );
 // Build reverse map: TWSE key → display symbol
 const KEY_TO_SYMBOL: Record<string, string> = Object.fromEntries(
