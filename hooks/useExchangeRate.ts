@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import useSWR from 'swr';
 import type { StockQuote } from '@/lib/types';
 import { readCache, writeCache, PRICE_CACHE_KEYS } from '@/lib/priceCache';
