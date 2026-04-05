@@ -1,7 +1,7 @@
 'use client';
 
-import { Fragment } from 'react';
-import { Trash2, Plus, Pencil } from 'lucide-react';
+import { Fragment, useState } from 'react';
+import { Trash2, Plus, Pencil, ChevronDown, ChevronRight } from 'lucide-react';
 import type { Position, Transaction, CategoryConfig } from '@/lib/types';
 import { AMOUNT_MASK, CATEGORY_COLORS } from '@/lib/constants';
 
@@ -50,6 +50,15 @@ export function LotTable({ positions, categories, usdToTwd, preferredCurrency = 
 
   const hasAnyLots = visibleCategories.length > 0;
 
+  const [collapsedPositions, setCollapsedPositions] = useState<Set<string>>(new Set());
+  function togglePosition(posId: string) {
+    setCollapsedPositions((prev) => {
+      const next = new Set(prev);
+      next.has(posId) ? next.delete(posId) : next.add(posId);
+      return next;
+    });
+  }
+
   const showTWD = preferredCurrency === 'TWD';
 
   return (
@@ -58,13 +67,27 @@ export function LotTable({ positions, categories, usdToTwd, preferredCurrency = 
         <h2 className="text-sm font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
           交易紀錄
         </h2>
-        <button
-          onClick={() => onAdd()}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          新增紀錄
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setCollapsedPositions(new Set(eligible.map((p) => p.id)))}
+            className="text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+          >
+            全部收合
+          </button>
+          <button
+            onClick={() => setCollapsedPositions(new Set())}
+            className="text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+          >
+            全部展開
+          </button>
+          <button
+            onClick={() => onAdd()}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            新增紀錄
+          </button>
+        </div>
       </div>
 
       {!hasAnyLots ? (
@@ -125,12 +148,21 @@ export function LotTable({ positions, categories, usdToTwd, preferredCurrency = 
                       return (
                         <Fragment key={pos.id}>
                           {/* Position group header */}
-                          <tr className="bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-100 dark:border-zinc-800">
+                          <tr
+                            className="bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-100 dark:border-zinc-800 cursor-pointer select-none"
+                            onClick={() => togglePosition(pos.id)}
+                          >
                             <td className="px-5 py-2" colSpan={6}>
-                              <span className="font-semibold text-zinc-700 dark:text-zinc-200 text-sm">
-                                {pos.symbol}
-                              </span>
-                              <span className="ml-2 text-xs text-zinc-400">{lots.length} 筆</span>
+                              <div className="flex items-center gap-2">
+                                {collapsedPositions.has(pos.id)
+                                  ? <ChevronRight className="w-3.5 h-3.5 text-zinc-400 flex-shrink-0" />
+                                  : <ChevronDown  className="w-3.5 h-3.5 text-zinc-400 flex-shrink-0" />
+                                }
+                                <span className="font-semibold text-zinc-700 dark:text-zinc-200 text-sm">
+                                  {pos.symbol}
+                                </span>
+                                <span className="text-xs text-zinc-400">{lots.length} 筆</span>
+                              </div>
                             </td>
                             <td className="text-right px-4 py-2 tabular-nums text-xs text-zinc-500 dark:text-zinc-400">
                               {usdToTwd > 0 && (
@@ -142,7 +174,7 @@ export function LotTable({ positions, categories, usdToTwd, preferredCurrency = 
                                 </div>
                               )}
                             </td>
-                            <td className="px-5 py-2">
+                            <td className="px-5 py-2" onClick={(e) => e.stopPropagation()}>
                               <button
                                 onClick={() => onAdd(pos.id)}
                                 className="text-xs text-blue-500 hover:text-blue-600 transition-colors"
@@ -153,7 +185,7 @@ export function LotTable({ positions, categories, usdToTwd, preferredCurrency = 
                           </tr>
 
                           {/* Transaction rows */}
-                          {lots.map((tx) => {
+                          {!collapsedPositions.has(pos.id) && lots.map((tx) => {
                             const amtUSD = txAmountUSD(tx, usdToTwd);
                             const amtTWD = txAmountTWD(tx, usdToTwd);
                             const sign = tx.type === 'sell' ? '-' : '';

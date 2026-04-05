@@ -1,11 +1,9 @@
 export function formatPrice(price: number, currency = 'USD'): string {
   if (currency === 'TWD') {
-    return new Intl.NumberFormat('zh-TW', {
-      style: 'currency',
-      currency: 'TWD',
+    return `NT$${new Intl.NumberFormat('en-US', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-    }).format(price);
+    }).format(price)}`;
   }
   // For crypto with very small prices, show more decimals
   const decimals = price < 1 ? 6 : price < 100 ? 4 : 2;
@@ -20,7 +18,7 @@ export function formatPrice(price: number, currency = 'USD'): string {
 export function formatChange(change: number, currency = 'USD'): string {
   const prefix = change >= 0 ? '+' : '';
   if (currency === 'TWD') {
-    return `${prefix}${change.toFixed(2)}`;
+    return `${prefix}NT$${Math.abs(change).toFixed(2)}`;
   }
   const decimals = Math.abs(change) < 1 ? 4 : 2;
   return `${prefix}${change.toFixed(decimals)}`;

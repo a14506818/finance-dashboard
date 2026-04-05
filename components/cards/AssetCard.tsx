@@ -3,6 +3,7 @@
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { formatPrice, formatChange, formatPercent } from '@/lib/formatters';
 import { useSettings } from '@/hooks/useSettings';
+import { useExchangeRate } from '@/hooks/useExchangeRate';
 import { gainColor, gainBadgeClass } from '@/lib/colors';
 
 interface AssetCardProps {
@@ -35,9 +36,29 @@ export function AssetCard({
   error,
 }: AssetCardProps) {
   const { settings } = useSettings();
+  const { usdToTwd } = useExchangeRate();
   const convention = settings.redGreenConvention ?? 'western';
+  const preferredCurrency = settings.preferredCurrency ?? 'USD';
   const isPositive = change >= 0;
   const isNeutral = change === 0;
+
+  // Dual currency price
+  const priceUSD = currency === 'TWD' ? (usdToTwd > 0 ? price / usdToTwd : 0) : price;
+  const priceTWD = currency === 'TWD' ? price : price * usdToTwd;
+  const [primaryPrice, primaryCur, secondaryPrice, secondaryCur] =
+    preferredCurrency === 'TWD'
+      ? [priceTWD, 'TWD' as const, priceUSD, 'USD' as const]
+      : [priceUSD, 'USD' as const, priceTWD, 'TWD' as const];
+
+  // Dual currency change
+  const changeUSD = currency === 'TWD' ? (usdToTwd > 0 ? change / usdToTwd : 0) : change;
+  const changeTWD = currency === 'TWD' ? change : change * usdToTwd;
+  const [primaryChange, primaryChangeCur] =
+    preferredCurrency === 'TWD'
+      ? [changeTWD, 'TWD' as const]
+      : [changeUSD, 'USD' as const];
+
+  const showSecondary = usdToTwd > 0;
 
   if (isLoading) {
     return (
@@ -81,9 +102,14 @@ export function AssetCard({
 
       <p className="text-xs text-zinc-500 dark:text-zinc-500 mb-2 truncate">{name}</p>
 
-      <p className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 tabular-nums">
-        {formatPrice(price, currency)}
+      <p className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 tabular-nums leading-tight">
+        {formatPrice(primaryPrice, primaryCur)}
       </p>
+      {showSecondary && (
+        <p className="text-xs text-zinc-400 dark:text-zinc-500 tabular-nums mt-0.5">
+          {formatPrice(secondaryPrice, secondaryCur)}
+        </p>
+      )}
 
       <div className="flex items-center gap-2 mt-2">
         <span
@@ -91,7 +117,7 @@ export function AssetCard({
             isNeutral ? 'text-zinc-400' : gainColor(isPositive, convention)
           }`}
         >
-          {formatChange(change, currency)}
+          {formatChange(primaryChange, primaryChangeCur)}
         </span>
         <span
           className={`text-xs px-1.5 py-0.5 rounded font-medium tabular-nums ${

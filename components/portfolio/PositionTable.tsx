@@ -1,7 +1,7 @@
 'use client';
 
 import { Fragment, useState } from 'react';
-import { Pencil, Trash2, Plus } from 'lucide-react';
+import { Pencil, Trash2, Plus, ChevronDown, ChevronRight } from 'lucide-react';
 import type { CategorySummary, MarketType } from '@/lib/types';
 import { formatPrice } from '@/lib/formatters';
 import { CATEGORY_COLORS, AMOUNT_MASK } from '@/lib/constants';
@@ -149,6 +149,15 @@ export function PositionTable({
 }: PositionTableProps) {
   const hasAnyItems = categorySummaries.some((c) => c.items.length > 0);
 
+  const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
+  function toggleCategory(key: string) {
+    setCollapsedCategories((prev) => {
+      const next = new Set(prev);
+      next.has(key) ? next.delete(key) : next.add(key);
+      return next;
+    });
+  }
+
   return (
     <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden">
       <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-100 dark:border-zinc-800">
@@ -162,13 +171,27 @@ export function PositionTable({
             </p>
           )}
         </div>
-        <button
-          onClick={onAdd}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          新增
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setCollapsedCategories(new Set(categorySummaries.map((c) => c.market)))}
+            className="text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+          >
+            全部收合
+          </button>
+          <button
+            onClick={() => setCollapsedCategories(new Set())}
+            className="text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+          >
+            全部展開
+          </button>
+          <button
+            onClick={onAdd}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            新增
+          </button>
+        </div>
       </div>
 
       {!hasAnyItems && !isLoading ? (
@@ -191,15 +214,22 @@ export function PositionTable({
               </tr>
             </thead>
             <tbody>
-              {categorySummaries.map((cat) => (
+              {categorySummaries.map((cat) => {
+                const isCollapsed = collapsedCategories.has(cat.market);
+                return (
                 <Fragment key={cat.market}>
                   {/* Category header row */}
                   <tr
                     key={`cat-${cat.market}`}
-                    className="border-b border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50"
+                    className="border-b border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50 cursor-pointer select-none"
+                    onClick={() => toggleCategory(cat.market)}
                   >
                     <td className="px-5 py-2.5" colSpan={3} >
                       <div className="flex items-center gap-2">
+                        {isCollapsed
+                          ? <ChevronRight className="w-3.5 h-3.5 text-zinc-400 flex-shrink-0" />
+                          : <ChevronDown  className="w-3.5 h-3.5 text-zinc-400 flex-shrink-0" />
+                        }
                         <span
                           className="w-2.5 h-2.5 rounded-full flex-shrink-0"
                           style={{ backgroundColor: CATEGORY_COLORS[cat.market] }}
@@ -217,7 +247,7 @@ export function PositionTable({
                         ? <ValuationCell usd={cat.categoryValuation} twd={cat.categoryValuationTWD} preferredCurrency={preferredCurrency} hideAmounts={hideAmounts} bold />
                         : <span className="text-zinc-300 dark:text-zinc-600">—</span>}
                     </td>
-                    <td className="text-right px-4 py-2.5">
+                    <td className="text-right px-4 py-2.5" onClick={(e) => e.stopPropagation()}>
                       <div className="flex items-center justify-end gap-1 text-xs">
                         <span className="tabular-nums text-zinc-600 dark:text-zinc-300 font-medium">
                           {cat.categoryPercent.toFixed(1)}%
@@ -254,14 +284,21 @@ export function PositionTable({
                     {/* Category P&L */}
                     <td className="text-right px-4 py-2.5 tabular-nums hidden sm:table-cell text-sm">
                       {cat.categoryUnrealizedPL != null && cat.categoryUnrealizedPLTWD != null
-                        ? <PLCell usd={cat.categoryUnrealizedPL} twd={cat.categoryUnrealizedPLTWD} preferredCurrency={preferredCurrency} hideAmounts={hideAmounts} convention={redGreenConvention} />
+                        ? <PLCell
+                            usd={cat.categoryUnrealizedPL}
+                            twd={cat.categoryUnrealizedPLTWD}
+                            percent={cat.categoryCostBasis ? cat.categoryUnrealizedPL / cat.categoryCostBasis * 100 : undefined}
+                            preferredCurrency={preferredCurrency}
+                            hideAmounts={hideAmounts}
+                            convention={redGreenConvention}
+                          />
                         : <span className="text-zinc-300 dark:text-zinc-600">—</span>}
                     </td>
                     <td className="px-5 py-2.5" />
                   </tr>
 
                   {/* Position rows */}
-                  {cat.items.map(({ position, name, price, currency, valuation, valuationTWD, percent, costBasis, unrealizedPL, unrealizedPLPercent, unrealizedPLTWD }) => (
+                  {!isCollapsed && cat.items.map(({ position, name, price, currency, valuation, valuationTWD, percent, costBasis, unrealizedPL, unrealizedPLPercent, unrealizedPLTWD }) => (
                     <tr
                       key={position.id}
                       className="border-b border-zinc-50 dark:border-zinc-800/50 hover:bg-zinc-50 dark:hover:bg-zinc-800/30 transition-colors"
@@ -327,7 +364,8 @@ export function PositionTable({
                     </tr>
                   ))}
                 </Fragment>
-              ))}
+                );
+              })}
             </tbody>
           </table>
         </div>
