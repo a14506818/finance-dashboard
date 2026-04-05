@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --positive: 142 76% 36%;
+    --negative: 0 84% 60%;
+  }
+
+  .dark {
+    --positive: 142 76% 45%;
+    --negative: 0 84% 65%;
+  }
+
+  body {
+    @apply bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100;
+    font-feature-settings: "tnum" 1;
+  }
+}
