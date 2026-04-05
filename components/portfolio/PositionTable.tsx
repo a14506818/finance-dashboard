@@ -25,6 +25,28 @@ function fmtTWD(v: number) {
   return `NT$${Math.round(v).toLocaleString()}`;
 }
 
+// Renders two-line valuation, swapping primary/secondary based on preferredCurrency
+function ValuationCell({ usd, twd, preferredCurrency, hideAmounts, bold }: { usd: number; twd: number; preferredCurrency: 'USD' | 'TWD'; hideAmounts?: boolean; bold?: boolean }) {
+  const primaryCls = bold ? 'font-medium text-zinc-900 dark:text-zinc-100' : 'text-zinc-700 dark:text-zinc-300';
+  if (hideAmounts) {
+    return (
+      <div className={`leading-snug ${primaryCls}`}>
+        <div>{AMOUNT_MASK}</div>
+        <div className="text-xs text-zinc-400 dark:text-zinc-500">{AMOUNT_MASK}</div>
+      </div>
+    );
+  }
+  const [primary, secondary] = preferredCurrency === 'TWD'
+    ? [fmtTWD(twd), fmtUSD(usd)]
+    : [fmtUSD(usd), fmtTWD(twd)];
+  return (
+    <div className={`leading-snug ${primaryCls}`}>
+      <div>{primary}</div>
+      <div className="text-xs text-zinc-400 dark:text-zinc-500">{secondary}</div>
+    </div>
+  );
+}
+
 // Renders two-line cost amount, swapping primary/secondary based on preferredCurrency
 function CostCell({ usd, twd, preferredCurrency, hideAmounts }: { usd: number; twd: number; preferredCurrency: 'USD' | 'TWD'; hideAmounts?: boolean }) {
   if (hideAmounts) {
@@ -158,8 +180,7 @@ export function PositionTable({
                 <th className="text-left px-5 py-3 font-medium">資產</th>
                 <th className="text-right px-4 py-3 font-medium">數量</th>
                 <th className="text-right px-4 py-3 font-medium">現價</th>
-                <th className="text-right px-4 py-3 font-medium">估值 USD</th>
-                <th className="text-right px-4 py-3 font-medium">估值 TWD</th>
+                <th className="text-right px-4 py-3 font-medium">估值</th>
                 <th className="text-right px-4 py-3 font-medium">佔比</th>
                 <th className="text-right px-4 py-3 font-medium hidden sm:table-cell">成本</th>
                 <th className="text-right px-4 py-3 font-medium hidden sm:table-cell">損益</th>
@@ -188,11 +209,10 @@ export function PositionTable({
                         )}
                       </div>
                     </td>
-                    <td className="text-right px-4 py-2.5 tabular-nums font-medium text-zinc-700 dark:text-zinc-200 text-sm">
-                      {cat.categoryValuation > 0 ? (hideAmounts ? AMOUNT_MASK : fmtUSD(cat.categoryValuation)) : '—'}
-                    </td>
-                    <td className="text-right px-4 py-2.5 tabular-nums text-zinc-500 dark:text-zinc-400 text-sm">
-                      {cat.categoryValuationTWD > 0 ? (hideAmounts ? AMOUNT_MASK : fmtTWD(cat.categoryValuationTWD)) : '—'}
+                    <td className="text-right px-4 py-2.5 tabular-nums text-sm">
+                      {cat.categoryValuation > 0
+                        ? <ValuationCell usd={cat.categoryValuation} twd={cat.categoryValuationTWD} preferredCurrency={preferredCurrency} hideAmounts={hideAmounts} bold />
+                        : <span className="text-zinc-300 dark:text-zinc-600">—</span>}
                     </td>
                     <td className="text-right px-4 py-2.5">
                       <div className="flex items-center justify-end gap-1 text-xs">
@@ -267,11 +287,8 @@ export function PositionTable({
                           ? <span className="text-zinc-400">—</span>
                           : formatPrice(price, currency)}
                       </td>
-                      <td className="text-right px-4 py-3 tabular-nums font-medium text-zinc-900 dark:text-zinc-100">
-                        {hideAmounts ? AMOUNT_MASK : fmtUSD(valuation)}
-                      </td>
-                      <td className="text-right px-4 py-3 tabular-nums text-zinc-600 dark:text-zinc-400">
-                        {hideAmounts ? AMOUNT_MASK : fmtTWD(valuationTWD)}
+                      <td className="text-right px-4 py-3 tabular-nums">
+                        <ValuationCell usd={valuation} twd={valuationTWD} preferredCurrency={preferredCurrency} hideAmounts={hideAmounts} bold />
                       </td>
                       <td className="text-right px-4 py-3 tabular-nums text-zinc-500 dark:text-zinc-500">
                         {percent.toFixed(1)}%

@@ -42,6 +42,7 @@ export function PositionForm({ editing, onSave, onCancel }: PositionFormProps) {
   const [manualValue, setManualValue]     = useState(editing?.manualValue?.toString() ?? '');
   const [manualCurrency, setManualCurrency] = useState<'USD' | 'TWD'>(editing?.manualCurrency ?? 'USD');
   const [category, setCategory]           = useState<MarketType>(editing?.category ?? 'manual');
+  const [twExchange, setTwExchange]       = useState<'tse' | 'otc'>(editing?.twExchange ?? 'tse');
 
   useEffect(() => {
     if (editing) {
@@ -51,6 +52,7 @@ export function PositionForm({ editing, onSave, onCancel }: PositionFormProps) {
       setManualValue(editing.manualValue?.toString() ?? '');
       setManualCurrency(editing.manualCurrency ?? 'USD');
       setCategory(editing.category ?? 'manual');
+      setTwExchange(editing.twExchange ?? 'tse');
     }
   }, [editing]);
 
@@ -67,7 +69,8 @@ export function PositionForm({ editing, onSave, onCancel }: PositionFormProps) {
     } else {
       const qty = parseFloat(quantity);
       if (!symbol.trim() || isNaN(qty) || qty <= 0) return;
-      onSave({ symbol: symbol.trim().toUpperCase(), market, quantity: qty });
+      onSave({ symbol: symbol.trim().toUpperCase(), market, quantity: qty,
+               ...(market === 'taiwan' ? { twExchange } : {}) });
     }
   };
 
@@ -119,6 +122,25 @@ export function PositionForm({ editing, onSave, onCancel }: PositionFormProps) {
                       : 'border-zinc-200 dark:border-zinc-700 text-zinc-500 hover:border-zinc-300 dark:hover:border-zinc-600'
                   }`}>
                   {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Taiwan: 上市 / 上櫃 */}
+        {market === 'taiwan' && (
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">市場</label>
+            <div className="flex gap-2">
+              {(['tse', 'otc'] as const).map((ex) => (
+                <button key={ex} type="button" onClick={() => setTwExchange(ex)}
+                  className={`px-3 py-1.5 text-sm rounded-md border transition-colors ${
+                    twExchange === ex
+                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 font-medium'
+                      : 'border-zinc-200 dark:border-zinc-700 text-zinc-500 hover:border-zinc-300 dark:hover:border-zinc-600'
+                  }`}>
+                  {ex === 'tse' ? '上市 (TSE)' : '上櫃 (OTC)'}
                 </button>
               ))}
             </div>

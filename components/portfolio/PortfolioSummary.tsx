@@ -154,7 +154,7 @@ export function PortfolioSummary({
             ))}
 
             {/* Cost & P&L — only when transaction records exist */}
-            {hasCostData && !isLoading && (
+            {hasCostData && (
               <div className="border-t border-zinc-100 dark:border-zinc-800 pt-2 mt-1 space-y-1.5">
                 {/* Cost row */}
                 <div className="flex items-start justify-between gap-2">

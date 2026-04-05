@@ -45,7 +45,8 @@ export function useExchangeRate() {
 
   return {
     usdToTwd: rate,
-    isLoading,
+    // Only "loading" when we have no rate at all (no live data AND no cache AND not yet fallen back)
+    isLoading: isLoading && !liveRate && !cachedRate,
     error: error as Error | undefined,
   };
 }

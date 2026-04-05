@@ -119,6 +119,7 @@ export default function PortfolioPage() {
       {tab === 'lots' && (
         <LotTable
           positions={positions}
+          categories={categories}
           usdToTwd={usdToTwd}
           preferredCurrency={settings.preferredCurrency}
           hideAmounts={settings.hideAmounts}

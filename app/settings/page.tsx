@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState, useEffect, KeyboardEvent } from 'react';
-import { Download, Upload, X, Plus, Sun, Moon, Trash2, Pencil } from 'lucide-react';
+import { Download, Upload, X, Plus, Sun, Moon, Trash2, Pencil, ExternalLink } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useSettings } from '@/hooks/useSettings';
 import { usePortfolio } from '@/hooks/usePortfolio';
@@ -372,6 +372,10 @@ export default function SettingsPage() {
           normalize={(s) => s.toUpperCase()}
           onChange={(next) => updateDashboardSymbols('taiwan', next)}
         />
+        <a href="https://tw.stock.yahoo.com/" target="_blank" rel="noopener noreferrer"
+          className="inline-flex items-center gap-1 text-xs text-blue-500 hover:text-blue-600 transition-colors">
+          查詢台股代號 <ExternalLink className="w-3 h-3" />
+        </a>
 
         <TagInput
           label="美股"
@@ -380,6 +384,10 @@ export default function SettingsPage() {
           normalize={(s) => s.toUpperCase()}
           onChange={(next) => updateDashboardSymbols('us', next)}
         />
+        <a href="https://finance.yahoo.com/" target="_blank" rel="noopener noreferrer"
+          className="inline-flex items-center gap-1 text-xs text-blue-500 hover:text-blue-600 transition-colors">
+          查詢美股代號 <ExternalLink className="w-3 h-3" />
+        </a>
 
         <TagInput
           label="加密貨幣"
@@ -388,6 +396,10 @@ export default function SettingsPage() {
           normalize={(s) => s.toLowerCase()}
           onChange={(next) => updateDashboardSymbols('crypto', next)}
         />
+        <a href="https://www.coingecko.com/" target="_blank" rel="noopener noreferrer"
+          className="inline-flex items-center gap-1 text-xs text-blue-500 hover:text-blue-600 transition-colors">
+          查詢 CoinGecko ID <ExternalLink className="w-3 h-3" />
+        </a>
       </Section>
 
       {/* 4. 危險區 */}

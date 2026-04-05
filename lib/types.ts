@@ -64,6 +64,7 @@ export interface Position {
   manualValue?: number;               // manual/cash only: directly entered value
   manualCurrency?: 'USD' | 'TWD';    // manual/cash only: currency of manualValue
   category?: MarketType;             // manual only: override which category bucket to use
+  twExchange?: 'tse' | 'otc';       // taiwan only: 上市(tse) or 上櫃(otc)
   lots?: Transaction[];              // transaction records (not used for cash)
 }
 

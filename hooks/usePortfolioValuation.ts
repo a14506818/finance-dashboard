@@ -6,7 +6,7 @@ import { useCryptoPrices } from './useCryptoPrices';
 import { useUSStocks } from './useUSStocks';
 import { useTaiwanStocks } from './useTaiwanStocks';
 import { useExchangeRate } from './useExchangeRate';
-import { CRYPTO_SYMBOL_TO_ID, TAIWAN_SYMBOL_MAP } from '@/lib/constants';
+import { CRYPTO_SYMBOL_TO_ID } from '@/lib/constants';
 
 function toUSD(amount: number, currency: 'USD' | 'TWD', usdToTwd: number): number {
   return currency === 'TWD' ? amount / usdToTwd : amount;
@@ -59,8 +59,7 @@ export function usePortfolioValuation(positions: Position[], categories: Categor
     () =>
       positions
         .filter((p) => p.market === 'taiwan')
-        .map((p) => TAIWAN_SYMBOL_MAP[p.symbol]?.key)
-        .filter((k): k is string => !!k)
+        .map((p) => `${p.twExchange ?? 'tse'}_${p.symbol}.tw`)
         .filter((v, i, a) => a.indexOf(v) === i),
     [positions]
   );

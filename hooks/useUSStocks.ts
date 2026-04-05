@@ -41,6 +41,7 @@ export function useUSStocks(symbols: string[]) {
   return {
     stocks: data ?? cachedStocks ?? [],
     error: error as Error | undefined,
-    isLoading,
+    // Only "loading" when we have no data at all (no live data AND no cache)
+    isLoading: isLoading && !data && !cachedStocks,
   };
 }

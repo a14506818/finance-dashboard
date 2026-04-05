@@ -60,6 +60,7 @@ export function useCryptoPrices(ids: string[]) {
   return {
     quotes: effectiveData ? quotes : [],
     error: error as Error | undefined,
-    isLoading,
+    // Only "loading" when we have no data at all (no live data AND no cache)
+    isLoading: isLoading && !effectiveData,
   };
 }
