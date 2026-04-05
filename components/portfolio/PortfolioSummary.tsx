@@ -2,6 +2,7 @@
 
 import type { CategorySummary } from '@/lib/types';
 import { CATEGORY_COLORS, AMOUNT_MASK } from '@/lib/constants';
+import { gainColor } from '@/lib/colors';
 
 interface PortfolioSummaryProps {
   categorySummaries: CategorySummary[];
@@ -10,6 +11,7 @@ interface PortfolioSummaryProps {
   isLoading: boolean;
   preferredCurrency?: 'USD' | 'TWD';
   hideAmounts?: boolean;
+  redGreenConvention?: 'western' | 'taiwan';
 }
 
 function DonutChart({ summaries }: { summaries: CategorySummary[] }) {
@@ -71,6 +73,7 @@ export function PortfolioSummary({
   isLoading,
   preferredCurrency = 'USD',
   hideAmounts = false,
+  redGreenConvention = 'western',
 }: PortfolioSummaryProps) {
   const active = categorySummaries.filter((s) => s.categoryValuation > 0);
 
@@ -85,7 +88,7 @@ export function PortfolioSummary({
   const totalPLPct   = totalCostUSD > 0 ? (totalPLUSD / totalCostUSD) * 100 : 0;
 
   const plPositive   = totalPLUSD >= 0;
-  const plColorClass = plPositive ? 'text-green-500' : 'text-red-500';
+  const plColorClass = gainColor(plPositive, redGreenConvention);
   const sign         = plPositive ? '+' : '';
 
   // Primary / secondary currency for cost & P&L

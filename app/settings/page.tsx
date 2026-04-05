@@ -357,6 +357,34 @@ export default function SettingsPage() {
             ))}
           </div>
         </div>
+
+        {/* Red/Green convention */}
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">漲跌顏色慣例</p>
+            <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-0.5">影響損益與股價漲跌的顯示顏色</p>
+          </div>
+          <div className="flex gap-2">
+            {([
+              { value: 'western', label: '綠漲紅跌', up: 'text-green-500', down: 'text-red-500' },
+              { value: 'taiwan',  label: '紅漲綠跌', up: 'text-red-500',   down: 'text-green-500' },
+            ] as const).map(({ value, label, up, down }) => (
+              <button
+                key={value}
+                onClick={() => updateSettings({ redGreenConvention: value })}
+                className={`px-3 py-2 text-sm rounded-md border font-medium transition-colors flex items-center gap-1.5 ${
+                  settings.redGreenConvention === value
+                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400'
+                    : 'border-zinc-200 dark:border-zinc-700 text-zinc-500 hover:border-zinc-300 dark:hover:border-zinc-600'
+                }`}
+              >
+                <span className={up}>▲</span>
+                <span>{label}</span>
+                <span className={down}>▼</span>
+              </button>
+            ))}
+          </div>
+        </div>
       </Section>
 
       {/* 3. Dashboard 追蹤標的 */}

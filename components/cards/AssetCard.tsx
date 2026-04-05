@@ -1,5 +1,9 @@
+'use client';
+
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { formatPrice, formatChange, formatPercent } from '@/lib/formatters';
+import { useSettings } from '@/hooks/useSettings';
+import { gainColor, gainBadgeClass } from '@/lib/colors';
 
 interface AssetCardProps {
   symbol: string;
@@ -30,6 +34,8 @@ export function AssetCard({
   isLoading,
   error,
 }: AssetCardProps) {
+  const { settings } = useSettings();
+  const convention = settings.redGreenConvention ?? 'western';
   const isPositive = change >= 0;
   const isNeutral = change === 0;
 
@@ -67,9 +73,9 @@ export function AssetCard({
         {isNeutral ? (
           <Minus className="w-4 h-4 text-zinc-400" />
         ) : isPositive ? (
-          <TrendingUp className="w-4 h-4 text-green-500" />
+          <TrendingUp className={`w-4 h-4 ${gainColor(true, convention)}`} />
         ) : (
-          <TrendingDown className="w-4 h-4 text-red-500" />
+          <TrendingDown className={`w-4 h-4 ${gainColor(false, convention)}`} />
         )}
       </div>
 
@@ -82,18 +88,16 @@ export function AssetCard({
       <div className="flex items-center gap-2 mt-2">
         <span
           className={`text-sm font-medium tabular-nums ${
-            isPositive ? 'text-green-500' : isNeutral ? 'text-zinc-400' : 'text-red-500'
+            isNeutral ? 'text-zinc-400' : gainColor(isPositive, convention)
           }`}
         >
           {formatChange(change, currency)}
         </span>
         <span
           className={`text-xs px-1.5 py-0.5 rounded font-medium tabular-nums ${
-            isPositive
-              ? 'bg-green-50 text-green-600 dark:bg-green-950 dark:text-green-400'
-              : isNeutral
+            isNeutral
               ? 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400'
-              : 'bg-red-50 text-red-600 dark:bg-red-950 dark:text-red-400'
+              : gainBadgeClass(isPositive, convention)
           }`}
         >
           {formatPercent(changePercent)}

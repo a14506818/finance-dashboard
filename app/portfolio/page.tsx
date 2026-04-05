@@ -98,6 +98,7 @@ export default function PortfolioPage() {
             isLoading={isLoading}
             preferredCurrency={settings.preferredCurrency}
             hideAmounts={settings.hideAmounts}
+            redGreenConvention={settings.redGreenConvention}
           />
 
           <AllocationBar categorySummaries={categorySummaries} />
@@ -108,6 +109,7 @@ export default function PortfolioPage() {
             usdToTwd={usdToTwd}
             preferredCurrency={settings.preferredCurrency}
             hideAmounts={settings.hideAmounts}
+            redGreenConvention={settings.redGreenConvention}
             onAdd={() => setShowForm(true)}
             onEdit={(id) => setEditingId(id)}
             onDelete={remove}

@@ -5,6 +5,7 @@ import { Pencil, Trash2, Plus } from 'lucide-react';
 import type { CategorySummary, MarketType } from '@/lib/types';
 import { formatPrice } from '@/lib/formatters';
 import { CATEGORY_COLORS, AMOUNT_MASK } from '@/lib/constants';
+import { gainColor } from '@/lib/colors';
 
 interface PositionTableProps {
   categorySummaries: CategorySummary[];
@@ -12,6 +13,7 @@ interface PositionTableProps {
   usdToTwd: number;
   preferredCurrency?: 'USD' | 'TWD';
   hideAmounts?: boolean;
+  redGreenConvention?: 'western' | 'taiwan';
   onAdd: () => void;
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
@@ -70,10 +72,10 @@ function CostCell({ usd, twd, preferredCurrency, hideAmounts }: { usd: number; t
 
 // Renders two-line P&L, swapping primary/secondary based on preferredCurrency
 function PLCell({
-  usd, twd, percent, preferredCurrency, hideAmounts,
-}: { usd: number; twd: number; percent?: number; preferredCurrency: 'USD' | 'TWD'; hideAmounts?: boolean }) {
+  usd, twd, percent, preferredCurrency, hideAmounts, convention = 'western',
+}: { usd: number; twd: number; percent?: number; preferredCurrency: 'USD' | 'TWD'; hideAmounts?: boolean; convention?: 'western' | 'taiwan' }) {
   const sign = (v: number) => v >= 0 ? '+' : '';
-  const colorClass = usd >= 0 ? 'text-green-500' : 'text-red-500';
+  const colorClass = gainColor(usd >= 0, convention);
   const pctStr = percent != null ? ` (${sign(percent)}${percent.toFixed(1)}%)` : '';
 
   if (hideAmounts) {
@@ -139,6 +141,7 @@ export function PositionTable({
   usdToTwd,
   preferredCurrency = 'USD',
   hideAmounts = false,
+  redGreenConvention = 'western',
   onAdd,
   onEdit,
   onDelete,
@@ -251,7 +254,7 @@ export function PositionTable({
                     {/* Category P&L */}
                     <td className="text-right px-4 py-2.5 tabular-nums hidden sm:table-cell text-sm">
                       {cat.categoryUnrealizedPL != null && cat.categoryUnrealizedPLTWD != null
-                        ? <PLCell usd={cat.categoryUnrealizedPL} twd={cat.categoryUnrealizedPLTWD} preferredCurrency={preferredCurrency} hideAmounts={hideAmounts} />
+                        ? <PLCell usd={cat.categoryUnrealizedPL} twd={cat.categoryUnrealizedPLTWD} preferredCurrency={preferredCurrency} hideAmounts={hideAmounts} convention={redGreenConvention} />
                         : <span className="text-zinc-300 dark:text-zinc-600">—</span>}
                     </td>
                     <td className="px-5 py-2.5" />
@@ -300,7 +303,7 @@ export function PositionTable({
                       </td>
                       <td className="text-right px-4 py-3 tabular-nums hidden sm:table-cell">
                         {unrealizedPL != null && unrealizedPLPercent != null && unrealizedPLTWD != null
-                          ? <PLCell usd={unrealizedPL} twd={unrealizedPLTWD} percent={unrealizedPLPercent} preferredCurrency={preferredCurrency} hideAmounts={hideAmounts} />
+                          ? <PLCell usd={unrealizedPL} twd={unrealizedPLTWD} percent={unrealizedPLPercent} preferredCurrency={preferredCurrency} hideAmounts={hideAmounts} convention={redGreenConvention} />
                           : <span className="text-zinc-300 dark:text-zinc-600">—</span>}
                       </td>
                       <td className="text-right px-5 py-3">

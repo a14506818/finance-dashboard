@@ -13,6 +13,7 @@ export const DEFAULT_PROFILE: UserProfile = {
 export const DEFAULT_SETTINGS: AppSettings = {
   preferredCurrency: 'USD',
   hideAmounts: false,
+  redGreenConvention: 'western',
   dashboardSymbols: {
     taiwan: ['0050', '0056'],
     us: ['VOO', 'QQQ'],
@@ -31,6 +32,7 @@ export function loadSettings(): AppSettings {
     return {
       preferredCurrency: parsed.preferredCurrency ?? DEFAULT_SETTINGS.preferredCurrency,
       hideAmounts: parsed.hideAmounts ?? DEFAULT_SETTINGS.hideAmounts,
+      redGreenConvention: parsed.redGreenConvention ?? DEFAULT_SETTINGS.redGreenConvention,
       dashboardSymbols: {
         taiwan: parsed.dashboardSymbols?.taiwan ?? DEFAULT_SETTINGS.dashboardSymbols.taiwan,
         us: parsed.dashboardSymbols?.us ?? DEFAULT_SETTINGS.dashboardSymbols.us,

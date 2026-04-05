@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import type { Position, MarketType } from '@/lib/types';
+import { useSettings } from '@/hooks/useSettings';
+import { CRYPTO_META } from '@/lib/constants';
 
 interface PositionFormProps {
   editing?: Position;
@@ -26,16 +28,23 @@ const CATEGORY_OPTIONS: { value: MarketType; label: string }[] = [
   { value: 'manual',  label: '其他' },
 ];
 
-const SUGGESTIONS: Partial<Record<MarketType, string[]>> = {
-  crypto: ['BTC', 'ETH', 'ADA', 'SOL', 'DOT'],
-  us:     ['VOO', 'QQQ', 'AAPL', 'NVDA', 'MSFT'],
-  taiwan: ['0050', '0056', '006208', '2330', '6936', '6446', '4951'],
-};
 
 const MANUAL_PRESETS = ['零碎股', '外幣存款', '質押中', '其他'];
 const CASH_PRESETS   = ['現金 USD', '現金 TWD', '活存', '定存', '外幣存款'];
 
 export function PositionForm({ editing, onSave, onCancel }: PositionFormProps) {
+  const { settings } = useSettings();
+
+  // Dynamic suggestions from dashboard settings
+  // crypto: CoinGecko IDs (e.g. 'bitcoin') → mapped to display symbols (e.g. 'BTC')
+  const SUGGESTIONS: Partial<Record<MarketType, string[]>> = {
+    crypto: settings.dashboardSymbols.crypto.map(
+      (id) => CRYPTO_META[id]?.symbol ?? id.toUpperCase()
+    ),
+    us:     settings.dashboardSymbols.us,
+    taiwan: settings.dashboardSymbols.taiwan,
+  };
+
   const [market, setMarket]               = useState<MarketType>(editing?.market ?? 'crypto');
   const [symbol, setSymbol]               = useState(editing?.symbol ?? '');
   const [quantity, setQuantity]           = useState(editing?.quantity?.toString() ?? '');

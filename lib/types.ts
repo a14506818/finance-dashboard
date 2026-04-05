@@ -9,6 +9,7 @@ export interface UserProfile {
 export interface AppSettings {
   preferredCurrency: 'USD' | 'TWD';
   hideAmounts: boolean;
+  redGreenConvention: 'western' | 'taiwan';  // western: 綠漲紅跌, taiwan: 紅漲綠跌
   dashboardSymbols: {
     taiwan: string[];   // display symbols e.g. ['0050', '0056']
     us: string[];       // e.g. ['VOO', 'QQQ']
