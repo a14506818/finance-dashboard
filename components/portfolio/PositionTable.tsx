@@ -167,8 +167,8 @@ export function PositionTable({
                 <th className="text-right px-4 py-3 font-medium">現價</th>
                 <th className="text-right px-4 py-3 font-medium">估值</th>
                 <th className="text-right px-4 py-3 font-medium">佔比</th>
-                <th className="text-right px-4 py-3 font-medium hidden sm:table-cell">成本</th>
-                <th className="text-right px-4 py-3 font-medium hidden sm:table-cell">損益</th>
+                <th className="text-right px-4 py-3 font-medium table-cell">成本</th>
+                <th className="text-right px-4 py-3 font-medium table-cell">損益</th>
                 <th className="text-right px-5 py-3 font-medium">操作</th>
               </tr>
             </thead>
@@ -235,13 +235,13 @@ export function PositionTable({
                       </div>
                     </td>
                     {/* Category cost */}
-                    <td className="text-right px-4 py-2.5 tabular-nums hidden sm:table-cell text-sm">
+                    <td className="text-right px-4 py-2.5 tabular-nums table-cell text-sm">
                       {cat.categoryCostBasis != null
                         ? <DualCurrencyCell usd={cat.categoryCostBasis} twd={cat.categoryCostBasis * usdToTwd} preferredCurrency={preferredCurrency} hideAmounts={hideAmounts} primaryCls="text-zinc-500 dark:text-zinc-400" />
                         : <span className="text-zinc-300 dark:text-zinc-600">—</span>}
                     </td>
                     {/* Category P&L */}
-                    <td className="text-right px-4 py-2.5 tabular-nums hidden sm:table-cell text-sm">
+                    <td className="text-right px-4 py-2.5 tabular-nums table-cell text-sm">
                       {cat.categoryUnrealizedPL != null && cat.categoryUnrealizedPLTWD != null
                         ? <PLCell
                             usd={cat.categoryUnrealizedPL}
@@ -292,12 +292,12 @@ export function PositionTable({
                       <td className="text-right px-4 py-3 tabular-nums text-zinc-500 dark:text-zinc-500">
                         {percent.toFixed(1)}%
                       </td>
-                      <td className="text-right px-4 py-3 tabular-nums hidden sm:table-cell">
+                      <td className="text-right px-4 py-3 tabular-nums table-cell">
                         {costBasis != null
                           ? <DualCurrencyCell usd={costBasis} twd={costBasis * usdToTwd} preferredCurrency={preferredCurrency} hideAmounts={hideAmounts} primaryCls="text-zinc-500 dark:text-zinc-400" />
                           : <span className="text-zinc-300 dark:text-zinc-600">—</span>}
                       </td>
-                      <td className="text-right px-4 py-3 tabular-nums hidden sm:table-cell">
+                      <td className="text-right px-4 py-3 tabular-nums table-cell">
                         {unrealizedPL != null && unrealizedPLPercent != null && unrealizedPLTWD != null
                           ? <PLCell usd={unrealizedPL} twd={unrealizedPLTWD} percent={unrealizedPLPercent} preferredCurrency={preferredCurrency} hideAmounts={hideAmounts} convention={redGreenConvention} />
                           : <span className="text-zinc-300 dark:text-zinc-600">—</span>}
