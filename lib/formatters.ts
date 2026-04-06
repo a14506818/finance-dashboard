@@ -16,10 +16,11 @@ export function formatPrice(price: number, currency = 'USD'): string {
 }
 
 export function formatChange(change: number, currency = 'USD'): string {
-  const prefix = change >= 0 ? '+' : '';
   if (currency === 'TWD') {
+    const prefix = change >= 0 ? '+' : '-';
     return `${prefix}NT$${Math.abs(change).toFixed(2)}`;
   }
+  const prefix = change >= 0 ? '+' : '';
   const decimals = Math.abs(change) < 1 ? 4 : 2;
   return `${prefix}${change.toFixed(decimals)}`;
 }
