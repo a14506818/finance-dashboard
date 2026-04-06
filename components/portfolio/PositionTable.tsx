@@ -279,7 +279,26 @@ export function PositionTable({
                       <td className="text-right px-4 py-3 tabular-nums text-zinc-700 dark:text-zinc-300">
                         {position.market === 'manual'
                           ? <span className="text-zinc-400">—</span>
-                          : position.quantity.toLocaleString(undefined, { maximumFractionDigits: 8 })}
+                          : (() => {
+                              const lotsQty = (position.lots?.length ?? 0) > 0
+                                ? position.lots!.reduce((s, l) => s + (l.type === 'buy' ? l.quantity : -l.quantity), 0)
+                                : null;
+                              const effectiveQty = lotsQty !== null
+                                ? lotsQty + (position.adjustedQuantity ?? 0)
+                                : position.quantity;
+                              const adj = position.adjustedQuantity;
+                              return (
+                                <div className="leading-snug">
+                                  <div>{effectiveQty.toLocaleString(undefined, { maximumFractionDigits: 8 })}</div>
+                                  {adj != null && Math.abs(adj) > 0.000001 && (
+                                    <div className={`text-xs ${adj > 0 ? 'text-emerald-500' : 'text-red-400'}`}>
+                                      {adj > 0 ? '+' : ''}{adj.toLocaleString(undefined, { maximumFractionDigits: 8 })} 獎勵
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })()
+                        }
                       </td>
                       <td className="text-right px-4 py-3 tabular-nums text-zinc-700 dark:text-zinc-300">
                         {position.market === 'manual'

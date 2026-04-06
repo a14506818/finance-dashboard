@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
-import type { Position, MarketType } from '@/lib/types';
+import type { Position, MarketType, Transaction } from '@/lib/types';
 import { useSettings } from '@/hooks/useSettings';
 import { CRYPTO_META } from '@/lib/constants';
 
 interface PositionFormProps {
   editing?: Position;
-  onSave: (data: Omit<Position, 'id'>) => void;
+  onSave: (data: Omit<Position, 'id'>, firstLot?: Omit<Transaction, 'id'>) => void;
   onCancel: () => void;
 }
 
@@ -63,6 +63,13 @@ export function PositionForm({ editing, onSave, onCancel }: PositionFormProps) {
   const [manualCurrency, setManualCurrency] = useState<'USD' | 'TWD'>(editing?.manualCurrency ?? 'USD');
   const [category, setCategory]           = useState<MarketType>(editing?.category ?? 'manual');
   const [twExchange, setTwExchange]       = useState<'tse' | 'otc'>(editing?.twExchange ?? 'tse');
+  // First lot fields (new positions only)
+  const [firstLotDate, setFirstLotDate]       = useState('');
+  const [firstLotQty, setFirstLotQty]         = useState('');
+  const [firstLotPrice, setFirstLotPrice]     = useState('');
+  const [firstLotCurrency, setFirstLotCurrency] = useState<'USD' | 'TWD'>(
+    editing?.market === 'taiwan' ? 'TWD' : 'USD'
+  );
 
   useEffect(() => {
     if (editing) {
@@ -102,13 +109,27 @@ export function PositionForm({ editing, onSave, onCancel }: PositionFormProps) {
         adjustedQuantity: adjQty === 0 ? undefined : adjQty,
         ...(market === 'taiwan' ? { twExchange } : {}),
         lots: editing.lots,
-      });
+      }, undefined);
+    } else if (!editing) {
+      // New position — quantity starts at 0, driven by lots
+      if (!symbol.trim()) return;
+      // Build optional first lot if user filled in qty + price
+      const lotQty   = parseFloat(firstLotQty);
+      const lotPrice = parseFloat(firstLotPrice);
+      const firstLot: Omit<Transaction, 'id'> | undefined =
+        !isNaN(lotQty) && lotQty > 0 && !isNaN(lotPrice) && lotPrice > 0
+          ? { type: 'buy', date: firstLotDate || undefined, quantity: lotQty, price: lotPrice, currency: firstLotCurrency }
+          : undefined;
+      onSave(
+        { symbol: symbol.trim().toUpperCase(), market, quantity: 0, ...(market === 'taiwan' ? { twExchange } : {}) },
+        firstLot
+      );
     } else {
-      // New position, or editing a position without lots (backward compat)
+      // Editing a position without lots (backward compat) — keep legacy quantity field
       const qty = parseFloat(quantity);
       if (!symbol.trim() || isNaN(qty) || qty <= 0) return;
       onSave({ symbol: symbol.trim().toUpperCase(), market, quantity: qty,
-               ...(market === 'taiwan' ? { twExchange } : {}) });
+               ...(market === 'taiwan' ? { twExchange } : {}) }, undefined);
     }
   };
 
@@ -187,10 +208,10 @@ export function PositionForm({ editing, onSave, onCancel }: PositionFormProps) {
 
         {/* Name / Symbol */}
         <div className="space-y-1.5">
-          <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+          <label htmlFor="position-symbol" className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
             {isManualLike ? '名稱' : '代號'}
           </label>
-          <input type="text" value={symbol}
+          <input id="position-symbol" type="text" value={symbol}
             onChange={(e) => setSymbol(e.target.value)}
             placeholder={
               market === 'cash'   ? '現金 USD、定存…' :
@@ -255,8 +276,58 @@ export function PositionForm({ editing, onSave, onCancel }: PositionFormProps) {
             </p>
           </div>
         )}
-        {!isManualLike && !(editing && editingLotsQty !== null) && (
-          // New position, or editing without lots (backward compat)
+        {!isManualLike && !editing && (
+          // New position: embed first lot section
+          <div className="space-y-3 pt-1 border-t border-zinc-100 dark:border-zinc-800">
+            <p className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider pt-1">
+              第一筆買入 <span className="font-normal normal-case text-zinc-400">（選填）</span>
+            </p>
+            <div className="space-y-1.5">
+              <label htmlFor="first-lot-date" className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                日期 <span className="text-zinc-400 font-normal">（選填）</span>
+              </label>
+              <input id="first-lot-date" type="date" value={firstLotDate}
+                onChange={(e) => setFirstLotDate(e.target.value)}
+                className="w-full px-3 py-2 rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <label htmlFor="first-lot-qty" className="text-sm font-medium text-zinc-700 dark:text-zinc-300">數量</label>
+                <input id="first-lot-qty" type="number" value={firstLotQty}
+                  onChange={(e) => setFirstLotQty(e.target.value)}
+                  placeholder="0.00" step="any" min="0"
+                  className="w-full px-3 py-2 rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              </div>
+              <div className="space-y-1.5">
+                <label htmlFor="first-lot-price" className="text-sm font-medium text-zinc-700 dark:text-zinc-300">買入單價</label>
+                <div className="flex gap-1.5">
+                  <input id="first-lot-price" type="number" value={firstLotPrice}
+                    onChange={(e) => setFirstLotPrice(e.target.value)}
+                    placeholder="0.00" step="any" min="0"
+                    className="flex-1 min-w-0 px-3 py-2 rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  {(['USD', 'TWD'] as const).map((c) => (
+                    <button key={c} type="button" onClick={() => setFirstLotCurrency(c)}
+                      className={`px-2 py-1 text-xs rounded-md border transition-colors ${
+                        firstLotCurrency === c
+                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 font-medium'
+                          : 'border-zinc-200 dark:border-zinc-700 text-zinc-500'
+                      }`}>
+                      {c}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+            {firstLotQty && firstLotPrice && (
+              <p className="text-xs text-zinc-400 dark:text-zinc-500 tabular-nums">
+                合計：{firstLotCurrency}{' '}
+                {(parseFloat(firstLotQty) * parseFloat(firstLotPrice)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })}
+              </p>
+            )}
+          </div>
+        )}
+        {!isManualLike && editing && editingLotsQty === null && (
+          // Editing without lots (backward compat) — keep legacy quantity field
           <div className="space-y-1.5">
             <label htmlFor="position-quantity" className="text-sm font-medium text-zinc-700 dark:text-zinc-300">數量</label>
             <input id="position-quantity" type="number" value={quantity}
@@ -264,9 +335,6 @@ export function PositionForm({ editing, onSave, onCancel }: PositionFormProps) {
               placeholder="0.00" step="any" min="0"
               className="w-full px-3 py-2 rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               required />
-            {!editing && (
-              <p className="text-xs text-zinc-400 dark:text-zinc-500">新增交易紀錄後，數量將由交易紀錄自動推算</p>
-            )}
           </div>
         )}
 

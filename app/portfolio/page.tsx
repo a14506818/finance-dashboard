@@ -34,12 +34,12 @@ export default function PortfolioPage() {
 
   const editingPosition = editingId ? positions.find((p) => p.id === editingId) : undefined;
 
-  const handleSave = (data: Omit<Position, 'id'>) => {
+  const handleSave = (data: Omit<Position, 'id'>, firstLot?: Omit<Transaction, 'id'>) => {
     if (editingId) {
       update(editingId, data);
       setEditingId(null);
     } else {
-      add(data);
+      add(data, firstLot);
       setShowForm(false);
     }
   };

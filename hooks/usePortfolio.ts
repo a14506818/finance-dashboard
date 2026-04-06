@@ -28,8 +28,13 @@ export function usePortfolio() {
   }, []);
 
   const add = useCallback(
-    (data: Omit<Position, 'id'>) => {
-      setPositions((prev) => addPosition(prev, data));
+    (data: Omit<Position, 'id'>, firstLot?: Omit<Transaction, 'id'>) => {
+      setPositions((prev) => {
+        const withPosition = addPosition(prev, data);
+        if (!firstLot) return withPosition;
+        const newPos = withPosition[withPosition.length - 1];
+        return addLot(withPosition, newPos.id, firstLot);
+      });
     },
     []
   );

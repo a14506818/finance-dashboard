@@ -31,17 +31,15 @@ function renderForm(props?: { editing?: Position }) {
   );
 }
 
-// ─── New position: quantity field with hint ───────────────────────────────────
+// ─── New position: first lot section ─────────────────────────────────────────
 
 describe('new position form', () => {
-  it('shows quantity field for new crypto position (with transaction hint)', () => {
+  it('shows first lot section with 日期, 數量, 買入單價 fields', () => {
     renderForm();
+    expect(screen.getByText(/第一筆買入/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/日期/)).toBeInTheDocument();
     expect(screen.getByLabelText(/^數量$/)).toBeInTheDocument();
-  });
-
-  it('shows hint about transaction-derived quantity for new positions', () => {
-    renderForm();
-    expect(screen.getByText(/新增交易紀錄後.*自動推算/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/買入單價/)).toBeInTheDocument();
   });
 
   it('does not show 目前實際數量 for new position', () => {
@@ -49,23 +47,81 @@ describe('new position form', () => {
     expect(screen.queryByLabelText('目前實際數量')).not.toBeInTheDocument();
   });
 
-  it('shows quantity field for new us position', () => {
+  it('shows first lot section for new us position', () => {
     renderForm();
     fireEvent.click(screen.getByRole('button', { name: '美股' }));
-    expect(screen.getByLabelText(/^數量$/)).toBeInTheDocument();
+    expect(screen.getByText(/第一筆買入/)).toBeInTheDocument();
   });
 
-  it('shows quantity field for new taiwan position', () => {
+  it('shows first lot section for new taiwan position', () => {
     renderForm();
     fireEvent.click(screen.getByRole('button', { name: '台股' }));
-    expect(screen.getByLabelText(/^數量$/)).toBeInTheDocument();
+    expect(screen.getByText(/第一筆買入/)).toBeInTheDocument();
   });
 
-  it('shows 現值 field for cash position (no quantity field)', () => {
+  it('shows 現值 field for cash position (no first lot section)', () => {
     renderForm();
     fireEvent.click(screen.getByRole('button', { name: '現金' }));
     expect(screen.getByLabelText('現值')).toBeInTheDocument();
-    expect(screen.queryByLabelText(/^數量$/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/第一筆買入/)).not.toBeInTheDocument();
+  });
+
+  it('shows total hint when qty and price are filled', () => {
+    renderForm();
+    fireEvent.change(screen.getByLabelText(/^數量$/), { target: { value: '1000' } });
+    fireEvent.change(screen.getByLabelText(/買入單價/), { target: { value: '0.5' } });
+    expect(screen.getByText(/合計/)).toBeInTheDocument();
+  });
+
+  it('saves position with quantity 0 when first lot is not filled', () => {
+    onSave.mockClear();
+    renderForm();
+    fireEvent.change(screen.getByLabelText(/代號/), { target: { value: 'ADA' } });
+    fireEvent.click(screen.getByRole('button', { name: '新增' }));
+    expect(onSave).toHaveBeenCalledWith(
+      expect.objectContaining({ symbol: 'ADA', quantity: 0 }),
+      undefined
+    );
+  });
+
+  it('saves position with firstLot when qty and price are filled', () => {
+    onSave.mockClear();
+    renderForm();
+    fireEvent.change(screen.getByLabelText(/代號/), { target: { value: 'ADA' } });
+    fireEvent.change(screen.getByLabelText(/^數量$/), { target: { value: '1000' } });
+    fireEvent.change(screen.getByLabelText(/買入單價/), { target: { value: '0.5' } });
+    fireEvent.click(screen.getByRole('button', { name: '新增' }));
+    expect(onSave).toHaveBeenCalledWith(
+      expect.objectContaining({ symbol: 'ADA', quantity: 0 }),
+      expect.objectContaining({ type: 'buy', quantity: 1000, price: 0.5, currency: 'USD' })
+    );
+  });
+
+  it('does not create first lot when only qty is filled (price missing)', () => {
+    onSave.mockClear();
+    renderForm();
+    fireEvent.change(screen.getByLabelText(/代號/), { target: { value: 'ADA' } });
+    fireEvent.change(screen.getByLabelText(/^數量$/), { target: { value: '1000' } });
+    // price left empty
+    fireEvent.click(screen.getByRole('button', { name: '新增' }));
+    expect(onSave).toHaveBeenCalledWith(
+      expect.objectContaining({ quantity: 0 }),
+      undefined
+    );
+  });
+
+  it('includes date in firstLot when filled', () => {
+    onSave.mockClear();
+    renderForm();
+    fireEvent.change(screen.getByLabelText(/代號/), { target: { value: 'ADA' } });
+    fireEvent.change(screen.getByLabelText(/日期/), { target: { value: '2024-01-01' } });
+    fireEvent.change(screen.getByLabelText(/^數量$/), { target: { value: '500' } });
+    fireEvent.change(screen.getByLabelText(/買入單價/), { target: { value: '0.6' } });
+    fireEvent.click(screen.getByRole('button', { name: '新增' }));
+    expect(onSave).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ date: '2024-01-01', quantity: 500, price: 0.6 })
+    );
   });
 });
 
@@ -81,10 +137,10 @@ describe('editing position with lots', () => {
     ],
   };
 
-  it('shows 目前實際數量 field (not legacy 數量)', () => {
+  it('shows 目前實際數量 field (not first lot section)', () => {
     renderForm({ editing: editingWithLots });
     expect(screen.getByLabelText('目前實際數量')).toBeInTheDocument();
-    expect(screen.queryByLabelText(/^數量$/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/第一筆買入/)).not.toBeInTheDocument();
   });
 
   it('prefills actual quantity with lotsQty + adjustedQuantity', () => {
@@ -101,7 +157,6 @@ describe('editing position with lots', () => {
 
   it('shows adjustment amount when actual differs from lots qty', () => {
     renderForm({ editing: editingWithLots });
-    // 705 - 700 = +5 adjustment shown
     expect(screen.getByText(/\+5.*利息\/調整/)).toBeInTheDocument();
   });
 
@@ -113,7 +168,8 @@ describe('editing position with lots', () => {
     fireEvent.click(screen.getByRole('button', { name: '更新' }));
     // adjustedQuantity = 702 - 700 = 2
     expect(onSave).toHaveBeenCalledWith(
-      expect.objectContaining({ adjustedQuantity: 2 })
+      expect.objectContaining({ adjustedQuantity: 2 }),
+      undefined  // no firstLot for editing
     );
   });
 
@@ -127,9 +183,9 @@ describe('editing position with lots', () => {
     const input = screen.getByLabelText('目前實際數量');
     fireEvent.change(input, { target: { value: '1000' } });
     fireEvent.click(screen.getByRole('button', { name: '更新' }));
-    // adjustedQuantity = 0 → should be omitted (undefined)
     expect(onSave).toHaveBeenCalledWith(
-      expect.objectContaining({ adjustedQuantity: undefined })
+      expect.objectContaining({ adjustedQuantity: undefined }),
+      undefined
     );
   });
 });
@@ -145,6 +201,7 @@ describe('editing position without lots (backward compat)', () => {
     renderForm({ editing: editingNoLots });
     expect(screen.getByLabelText(/^數量$/)).toBeInTheDocument();
     expect(screen.queryByLabelText('目前實際數量')).not.toBeInTheDocument();
+    expect(screen.queryByText(/第一筆買入/)).not.toBeInTheDocument();
   });
 
   it('prefills legacy quantity field', () => {
@@ -153,17 +210,15 @@ describe('editing position without lots (backward compat)', () => {
     expect(parseFloat(input.value)).toBe(0.5);
   });
 
-  it('calls onSave with quantity (no adjustedQuantity)', () => {
+  it('calls onSave with quantity and no firstLot', () => {
     onSave.mockClear();
     renderForm({ editing: editingNoLots });
     const input = screen.getByLabelText(/^數量$/);
     fireEvent.change(input, { target: { value: '2' } });
     fireEvent.click(screen.getByRole('button', { name: '更新' }));
     expect(onSave).toHaveBeenCalledWith(
-      expect.objectContaining({ quantity: 2 })
-    );
-    expect(onSave).not.toHaveBeenCalledWith(
-      expect.objectContaining({ adjustedQuantity: expect.anything() })
+      expect.objectContaining({ quantity: 2 }),
+      undefined
     );
   });
 });
