@@ -145,7 +145,7 @@ describe('PositionTable', () => {
     expect(onEdit).toHaveBeenCalledWith('p1');
   });
 
-  it('calls onDelete when trash button clicked', () => {
+  it('shows confirm dialog when trash button clicked', () => {
     const onDelete = vi.fn();
     const summaries = [makeSummary({
       market: 'us', categoryValuation: 1, categoryValuationTWD: 32,
@@ -154,7 +154,36 @@ describe('PositionTable', () => {
     })];
     render(<PositionTable {...defaultProps} categorySummaries={summaries} onDelete={onDelete} />);
     fireEvent.click(screen.getByTitle('刪除'));
+    // Confirm dialog should appear
+    expect(screen.getByText(/刪除倉位「AAPL」/)).toBeInTheDocument();
+    expect(onDelete).not.toHaveBeenCalled(); // not yet
+  });
+
+  it('calls onDelete after confirm dialog confirmed', () => {
+    const onDelete = vi.fn();
+    const summaries = [makeSummary({
+      market: 'us', categoryValuation: 1, categoryValuationTWD: 32,
+      items: [{ position: { id: 'p1', symbol: 'AAPL', market: 'us', quantity: 1 },
+        name: 'AAPL', price: 1, currency: 'USD', valuation: 1, valuationTWD: 32, percent: 100 }],
+    })];
+    render(<PositionTable {...defaultProps} categorySummaries={summaries} onDelete={onDelete} />);
+    fireEvent.click(screen.getByTitle('刪除'));
+    fireEvent.click(screen.getByRole('button', { name: '確認刪除' }));
     expect(onDelete).toHaveBeenCalledWith('p1');
+  });
+
+  it('does not call onDelete when confirm dialog cancelled', () => {
+    const onDelete = vi.fn();
+    const summaries = [makeSummary({
+      market: 'us', categoryValuation: 1, categoryValuationTWD: 32,
+      items: [{ position: { id: 'p1', symbol: 'AAPL', market: 'us', quantity: 1 },
+        name: 'AAPL', price: 1, currency: 'USD', valuation: 1, valuationTWD: 32, percent: 100 }],
+    })];
+    render(<PositionTable {...defaultProps} categorySummaries={summaries} onDelete={onDelete} />);
+    fireEvent.click(screen.getByTitle('刪除'));
+    fireEvent.click(screen.getByRole('button', { name: '取消' }));
+    expect(onDelete).not.toHaveBeenCalled();
+    expect(screen.queryByText(/刪除倉位/)).not.toBeInTheDocument();
   });
 
   it('shows exchange rate when usdToTwd > 0', () => {

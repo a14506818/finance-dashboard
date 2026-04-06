@@ -7,6 +7,7 @@ import { formatPrice, fmtUSD, fmtTWD } from '@/lib/formatters';
 import { CATEGORY_COLORS, AMOUNT_MASK } from '@/lib/constants';
 import { gainColor } from '@/lib/colors';
 import { useToggleSet } from '@/hooks/useToggleSet';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 
 interface PositionTableProps {
   categorySummaries: CategorySummary[];
@@ -116,6 +117,9 @@ export function PositionTable({
   const hasAnyItems = categorySummaries.some((c) => c.items.length > 0);
 
   const { set: collapsedCategories, toggle: toggleCategory, setSet: setCollapsedCategories } = useToggleSet();
+
+  // Delete confirmation state
+  const [pendingDelete, setPendingDelete] = useState<{ id: string; symbol: string } | null>(null);
 
   return (
     <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden">
@@ -331,7 +335,7 @@ export function PositionTable({
                             <Pencil className="w-3.5 h-3.5" />
                           </button>
                           <button
-                            onClick={() => onDelete(position.id)}
+                            onClick={() => setPendingDelete({ id: position.id, symbol: position.symbol })}
                             className="p-1.5 rounded hover:bg-red-50 dark:hover:bg-red-950 text-zinc-400 hover:text-red-500 transition-colors"
                             title="刪除"
                           >
@@ -347,6 +351,16 @@ export function PositionTable({
             </tbody>
           </table>
         </div>
+      )}
+
+      {pendingDelete && (
+        <ConfirmDialog
+          title={`刪除倉位「${pendingDelete.symbol}」`}
+          description="此倉位的所有交易紀錄將一併刪除，且無法復原。確定要繼續嗎？"
+          confirmLabel="確認刪除"
+          onConfirm={() => { onDelete(pendingDelete.id); setPendingDelete(null); }}
+          onCancel={() => setPendingDelete(null)}
+        />
       )}
     </div>
   );

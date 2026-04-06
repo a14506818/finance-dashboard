@@ -1,11 +1,12 @@
 'use client';
 
-import { Fragment } from 'react';
+import { Fragment, useState } from 'react';
 import { Trash2, Plus, Pencil, ChevronDown, ChevronRight } from 'lucide-react';
 import type { Position, Transaction, CategoryConfig } from '@/lib/types';
 import { AMOUNT_MASK, CATEGORY_COLORS } from '@/lib/constants';
 import { fmtUSD, fmtTWD } from '@/lib/formatters';
 import { useToggleSet } from '@/hooks/useToggleSet';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 
 interface LotTableProps {
   positions: Position[];
@@ -29,6 +30,14 @@ function txAmountTWD(tx: Transaction, usdToTwd: number): number {
 
 export function LotTable({ positions, categories, usdToTwd, preferredCurrency = 'USD', hideAmounts = false, onAdd, onEdit, onDelete }: LotTableProps) {
   const eligible = positions.filter((p) => p.market !== 'cash');
+
+  // Delete confirmation state: store positionId + lotId + display labels
+  const [pendingDelete, setPendingDelete] = useState<{
+    positionId: string;
+    lotId: string;
+    positionSymbol: string;
+    lotLabel: string;
+  } | null>(null);
 
   // Group positions by category bucket (same logic as usePortfolioValuation)
   const positionsByCategory: Record<string, Position[]> = {};
@@ -229,7 +238,14 @@ export function LotTable({ positions, categories, usdToTwd, preferredCurrency = 
                                       <Pencil className="w-3.5 h-3.5" />
                                     </button>
                                     <button
-                                      onClick={() => onDelete(pos.id, tx.id)}
+                                      onClick={() => setPendingDelete({
+                                        positionId: pos.id,
+                                        lotId: tx.id,
+                                        positionSymbol: pos.symbol,
+                                        lotLabel: tx.date
+                                          ? `${tx.type === 'buy' ? '買入' : '賣出'} ${tx.quantity.toLocaleString(undefined, { maximumFractionDigits: 8 })} 股／顆（${tx.date}）`
+                                          : `${tx.type === 'buy' ? '買入' : '賣出'} ${tx.quantity.toLocaleString(undefined, { maximumFractionDigits: 8 })} 股／顆`,
+                                      })}
                                       className="p-1.5 rounded hover:bg-red-50 dark:hover:bg-red-950 text-zinc-400 hover:text-red-500 transition-colors"
                                       title="刪除"
                                     >
@@ -249,6 +265,16 @@ export function LotTable({ positions, categories, usdToTwd, preferredCurrency = 
             </tbody>
           </table>
         </div>
+      )}
+
+      {pendingDelete && (
+        <ConfirmDialog
+          title={`刪除「${pendingDelete.positionSymbol}」的交易紀錄`}
+          description={`即將刪除：${pendingDelete.lotLabel}。此操作無法復原，確定要繼續嗎？`}
+          confirmLabel="確認刪除"
+          onConfirm={() => { onDelete(pendingDelete.positionId, pendingDelete.lotId); setPendingDelete(null); }}
+          onCancel={() => setPendingDelete(null)}
+        />
       )}
     </div>
   );

@@ -9,6 +9,7 @@ import { exportToJSON, importFromJSON, clearAllData } from '@/lib/portfolio';
 import { saveSettings, DEFAULT_SETTINGS } from '@/lib/settings';
 import { AVATAR_EMOJIS, AVATAR_COLORS } from '@/lib/constants';
 import type { AppSettings } from '@/lib/types';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 
 // ── Tag input for symbol lists ──────────────────────────────────────────────
 
@@ -445,31 +446,13 @@ export default function SettingsPage() {
                 刪除所有倉位、交易紀錄、類別配置與設定，此操作無法復原
               </p>
             </div>
-            {clearConfirm ? (
-              <div className="flex items-center gap-2 flex-shrink-0">
-                <span className="text-xs text-red-500">確定要清空嗎？</span>
-                <button
-                  onClick={handleClearData}
-                  className="px-3 py-1.5 text-xs rounded-md bg-red-600 hover:bg-red-700 text-white font-medium transition-colors"
-                >
-                  確認清空
-                </button>
-                <button
-                  onClick={() => setClearConfirm(false)}
-                  className="px-3 py-1.5 text-xs rounded-md border border-zinc-200 dark:border-zinc-700 text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
-                >
-                  取消
-                </button>
-              </div>
-            ) : (
-              <button
-                onClick={() => setClearConfirm(true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md border border-red-200 dark:border-red-800 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/50 transition-colors flex-shrink-0"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-                清空資料
-              </button>
-            )}
+            <button
+              onClick={() => setClearConfirm(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md border border-red-200 dark:border-red-800 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/50 transition-colors flex-shrink-0"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              清空資料
+            </button>
           </div>
         </div>
       </div>
@@ -494,6 +477,16 @@ export default function SettingsPage() {
           </p>
         </div>
       </Section>
+
+      {clearConfirm && (
+        <ConfirmDialog
+          title="清空所有資料"
+          description="將刪除所有倉位、交易紀錄、類別配置與個人設定，此操作無法復原。確定要繼續嗎？"
+          confirmLabel="確認清空"
+          onConfirm={handleClearData}
+          onCancel={() => setClearConfirm(false)}
+        />
+      )}
     </main>
   );
 }

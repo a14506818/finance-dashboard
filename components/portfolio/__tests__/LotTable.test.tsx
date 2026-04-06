@@ -113,13 +113,36 @@ describe('LotTable', () => {
     expect(onEdit).toHaveBeenCalledWith('p1', expect.objectContaining({ id: 'l1' }));
   });
 
-  it('calls onDelete when trash button clicked', () => {
+  it('shows confirm dialog when trash button clicked', () => {
     const onDelete = vi.fn();
     const positions = [makePosition()];
     render(<LotTable {...defaultProps} positions={positions} onDelete={onDelete} />);
 
     fireEvent.click(screen.getByTitle('刪除'));
+    // Dialog should appear with position symbol
+    expect(screen.getByText(/刪除「AAPL」的交易紀錄/)).toBeInTheDocument();
+    expect(onDelete).not.toHaveBeenCalled();
+  });
+
+  it('calls onDelete after confirm dialog confirmed', () => {
+    const onDelete = vi.fn();
+    const positions = [makePosition()];
+    render(<LotTable {...defaultProps} positions={positions} onDelete={onDelete} />);
+
+    fireEvent.click(screen.getByTitle('刪除'));
+    fireEvent.click(screen.getByRole('button', { name: '確認刪除' }));
     expect(onDelete).toHaveBeenCalledWith('p1', 'l1');
+  });
+
+  it('does not call onDelete when confirm dialog cancelled', () => {
+    const onDelete = vi.fn();
+    const positions = [makePosition()];
+    render(<LotTable {...defaultProps} positions={positions} onDelete={onDelete} />);
+
+    fireEvent.click(screen.getByTitle('刪除'));
+    fireEvent.click(screen.getByRole('button', { name: '取消' }));
+    expect(onDelete).not.toHaveBeenCalled();
+    expect(screen.queryByText(/刪除「AAPL」/)).not.toBeInTheDocument();
   });
 
   it('shows category header row', () => {
