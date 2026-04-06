@@ -151,7 +151,7 @@ export function usePortfolioValuation(positions: Position[], categories: Categor
         market: cat.market,
         name: cat.name,
         targetPercent: cat.targetPercent,
-        items: catItems,
+        items: [...catItems].sort((a, b) => b.percent - a.percent),
         categoryValuation: catVal,
         categoryValuationTWD: catValTWD,
         categoryPercent: catPct,
@@ -160,6 +160,12 @@ export function usePortfolioValuation(positions: Position[], categories: Categor
         categoryUnrealizedPL,
         categoryUnrealizedPLTWD,
       };
+    }).sort((a, b) => {
+      const isLast = (m: string) => m === 'cash' || m === 'manual';
+      const aLast = isLast(a.market) ? 1 : 0;
+      const bLast = isLast(b.market) ? 1 : 0;
+      if (aLast !== bLast) return aLast - bLast;
+      return b.categoryPercent - a.categoryPercent;
     }),
   [categories, items, totalValuation]);
 

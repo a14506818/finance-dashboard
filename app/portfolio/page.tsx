@@ -114,6 +114,9 @@ export default function PortfolioPage() {
             onEdit={(id) => setEditingId(id)}
             onDelete={remove}
             onUpdateCategoryTarget={setCategoryTarget}
+            onAddLot={handleOpenLotForm}
+            onEditLot={handleEditLot}
+            onDeleteLot={deleteLot}
           />
         </>
       )}

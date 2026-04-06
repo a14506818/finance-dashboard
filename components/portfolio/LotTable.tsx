@@ -132,7 +132,9 @@ export function LotTable({ positions, categories, usdToTwd, preferredCurrency = 
 
                     {/* Position groups within this category */}
                     {catPositions.map((pos) => {
-                      const lots = pos.lots ?? [];
+                      const lots = [...(pos.lots ?? [])].sort((a, b) =>
+                        (b.date ?? '0000-00-00').localeCompare(a.date ?? '0000-00-00')
+                      );
 
                       const totalBuyUSD  = lots.filter((t) => t.type === 'buy').reduce((s, t) => s + txAmountUSD(t, usdToTwd), 0);
                       const totalSellUSD = lots.filter((t) => t.type === 'sell').reduce((s, t) => s + txAmountUSD(t, usdToTwd), 0);
