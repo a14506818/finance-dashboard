@@ -3,9 +3,10 @@
 import { Fragment, useState } from 'react';
 import { Pencil, Trash2, Plus, ChevronDown, ChevronRight } from 'lucide-react';
 import type { CategorySummary, MarketType } from '@/lib/types';
-import { formatPrice } from '@/lib/formatters';
+import { formatPrice, fmtUSD, fmtTWD } from '@/lib/formatters';
 import { CATEGORY_COLORS, AMOUNT_MASK } from '@/lib/constants';
 import { gainColor } from '@/lib/colors';
+import { useToggleSet } from '@/hooks/useToggleSet';
 
 interface PositionTableProps {
   categorySummaries: CategorySummary[];
@@ -20,52 +21,17 @@ interface PositionTableProps {
   onUpdateCategoryTarget: (market: MarketType, target: number) => void;
 }
 
-function fmtUSD(v: number) {
-  return `$${v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-}
-function fmtTWD(v: number) {
-  return `NT$${Math.round(v).toLocaleString()}`;
-}
-
-// Renders two-line valuation, swapping primary/secondary based on preferredCurrency
-function ValuationCell({ usd, twd, preferredCurrency, hideAmounts, bold }: { usd: number; twd: number; preferredCurrency: 'USD' | 'TWD'; hideAmounts?: boolean; bold?: boolean }) {
-  const primaryCls = bold ? 'font-medium text-zinc-900 dark:text-zinc-100' : 'text-zinc-700 dark:text-zinc-300';
-  if (hideAmounts) {
-    return (
-      <div className={`leading-snug ${primaryCls}`}>
-        <div>{AMOUNT_MASK}</div>
-        <div className="text-xs text-zinc-400 dark:text-zinc-500">{AMOUNT_MASK}</div>
-      </div>
-    );
-  }
+// Renders two-line dual-currency amount, swapping primary/secondary based on preferredCurrency
+function DualCurrencyCell({
+  usd, twd, preferredCurrency, hideAmounts, primaryCls = 'text-zinc-700 dark:text-zinc-300',
+}: { usd: number; twd: number; preferredCurrency: 'USD' | 'TWD'; hideAmounts?: boolean; primaryCls?: string }) {
   const [primary, secondary] = preferredCurrency === 'TWD'
     ? [fmtTWD(twd), fmtUSD(usd)]
     : [fmtUSD(usd), fmtTWD(twd)];
   return (
     <div className={`leading-snug ${primaryCls}`}>
-      <div>{primary}</div>
-      <div className="text-xs text-zinc-400 dark:text-zinc-500">{secondary}</div>
-    </div>
-  );
-}
-
-// Renders two-line cost amount, swapping primary/secondary based on preferredCurrency
-function CostCell({ usd, twd, preferredCurrency, hideAmounts }: { usd: number; twd: number; preferredCurrency: 'USD' | 'TWD'; hideAmounts?: boolean }) {
-  if (hideAmounts) {
-    return (
-      <div className="text-zinc-500 dark:text-zinc-400 leading-snug">
-        <div>{AMOUNT_MASK}</div>
-        <div className="text-xs text-zinc-400 dark:text-zinc-500">{AMOUNT_MASK}</div>
-      </div>
-    );
-  }
-  const [primary, secondary] = preferredCurrency === 'TWD'
-    ? [fmtTWD(twd), fmtUSD(usd)]
-    : [fmtUSD(usd), fmtTWD(twd)];
-  return (
-    <div className="text-zinc-500 dark:text-zinc-400 leading-snug">
-      <div>{primary}</div>
-      <div className="text-xs text-zinc-400 dark:text-zinc-500">{secondary}</div>
+      <div>{hideAmounts ? AMOUNT_MASK : primary}</div>
+      <div className="text-xs text-zinc-400 dark:text-zinc-500">{hideAmounts ? AMOUNT_MASK : secondary}</div>
     </div>
   );
 }
@@ -149,14 +115,7 @@ export function PositionTable({
 }: PositionTableProps) {
   const hasAnyItems = categorySummaries.some((c) => c.items.length > 0);
 
-  const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
-  function toggleCategory(key: string) {
-    setCollapsedCategories((prev) => {
-      const next = new Set(prev);
-      next.has(key) ? next.delete(key) : next.add(key);
-      return next;
-    });
-  }
+  const { set: collapsedCategories, toggle: toggleCategory, setSet: setCollapsedCategories } = useToggleSet();
 
   return (
     <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden">
@@ -244,7 +203,7 @@ export function PositionTable({
                     </td>
                     <td className="text-right px-4 py-2.5 tabular-nums text-sm">
                       {cat.categoryValuation > 0
-                        ? <ValuationCell usd={cat.categoryValuation} twd={cat.categoryValuationTWD} preferredCurrency={preferredCurrency} hideAmounts={hideAmounts} bold />
+                        ? <DualCurrencyCell usd={cat.categoryValuation} twd={cat.categoryValuationTWD} preferredCurrency={preferredCurrency} hideAmounts={hideAmounts} primaryCls="font-medium text-zinc-900 dark:text-zinc-100" />
                         : <span className="text-zinc-300 dark:text-zinc-600">—</span>}
                     </td>
                     <td className="text-right px-4 py-2.5" onClick={(e) => e.stopPropagation()}>
@@ -278,7 +237,7 @@ export function PositionTable({
                     {/* Category cost */}
                     <td className="text-right px-4 py-2.5 tabular-nums hidden sm:table-cell text-sm">
                       {cat.categoryCostBasis != null
-                        ? <CostCell usd={cat.categoryCostBasis} twd={cat.categoryCostBasis * usdToTwd} preferredCurrency={preferredCurrency} hideAmounts={hideAmounts} />
+                        ? <DualCurrencyCell usd={cat.categoryCostBasis} twd={cat.categoryCostBasis * usdToTwd} preferredCurrency={preferredCurrency} hideAmounts={hideAmounts} primaryCls="text-zinc-500 dark:text-zinc-400" />
                         : <span className="text-zinc-300 dark:text-zinc-600">—</span>}
                     </td>
                     {/* Category P&L */}
@@ -328,14 +287,14 @@ export function PositionTable({
                           : formatPrice(price, currency)}
                       </td>
                       <td className="text-right px-4 py-3 tabular-nums">
-                        <ValuationCell usd={valuation} twd={valuationTWD} preferredCurrency={preferredCurrency} hideAmounts={hideAmounts} bold />
+                        <DualCurrencyCell usd={valuation} twd={valuationTWD} preferredCurrency={preferredCurrency} hideAmounts={hideAmounts} primaryCls="font-medium text-zinc-900 dark:text-zinc-100" />
                       </td>
                       <td className="text-right px-4 py-3 tabular-nums text-zinc-500 dark:text-zinc-500">
                         {percent.toFixed(1)}%
                       </td>
                       <td className="text-right px-4 py-3 tabular-nums hidden sm:table-cell">
                         {costBasis != null
-                          ? <CostCell usd={costBasis} twd={costBasis * usdToTwd} preferredCurrency={preferredCurrency} hideAmounts={hideAmounts} />
+                          ? <DualCurrencyCell usd={costBasis} twd={costBasis * usdToTwd} preferredCurrency={preferredCurrency} hideAmounts={hideAmounts} primaryCls="text-zinc-500 dark:text-zinc-400" />
                           : <span className="text-zinc-300 dark:text-zinc-600">—</span>}
                       </td>
                       <td className="text-right px-4 py-3 tabular-nums hidden sm:table-cell">

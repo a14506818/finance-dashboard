@@ -4,12 +4,7 @@ import { useState, useEffect } from 'react';
 import useSWR from 'swr';
 import type { StockQuote } from '@/lib/types';
 import { readCache, writeCache, PRICE_CACHE_KEYS } from '@/lib/priceCache';
-
-const fetcher = (url: string) =>
-  fetch(url).then((res) => {
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return res.json();
-  });
+import { fetcher } from '@/lib/fetcher';
 
 const FALLBACK_USD_TWD = 32;
 

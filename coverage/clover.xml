@@ -1,0 +1,435 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1775441956062" clover="3.2.0">
+  <project timestamp="1775441956062" name="All files">
+    <metrics statements="375" coveredstatements="308" conditionals="418" coveredconditionals="272" methods="149" coveredmethods="123" elements="942" coveredelements="703" complexity="0" loc="375" ncloc="375" packages="4" files="14" classes="14"/>
+    <package name="components.cards">
+      <metrics statements="20" coveredstatements="20" conditionals="39" coveredconditionals="25" methods="2" coveredmethods="2"/>
+      <file name="AssetCard.tsx" path="/Users/cynthiachuang/Justin_Dev/Finance_Dashboard/components/cards/AssetCard.tsx">
+        <metrics statements="20" coveredstatements="20" conditionals="39" coveredconditionals="25" methods="2" coveredmethods="2"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="22" count="3" type="stmt"/>
+        <line num="38" count="8" type="stmt"/>
+        <line num="39" count="8" type="stmt"/>
+        <line num="40" count="8" type="cond" truecount="1" falsecount="1"/>
+        <line num="41" count="8" type="cond" truecount="1" falsecount="1"/>
+        <line num="42" count="8" type="stmt"/>
+        <line num="43" count="8" type="stmt"/>
+        <line num="46" count="8" type="cond" truecount="1" falsecount="3"/>
+        <line num="47" count="8" type="cond" truecount="1" falsecount="1"/>
+        <line num="49" count="8" type="cond" truecount="1" falsecount="1"/>
+        <line num="54" count="8" type="cond" truecount="1" falsecount="3"/>
+        <line num="55" count="8" type="cond" truecount="1" falsecount="1"/>
+        <line num="57" count="8" type="cond" truecount="1" falsecount="1"/>
+        <line num="61" count="8" type="stmt"/>
+        <line num="63" count="8" type="cond" truecount="2" falsecount="0"/>
+        <line num="64" count="1" type="stmt"/>
+        <line num="73" count="7" type="cond" truecount="2" falsecount="0"/>
+        <line num="74" count="1" type="stmt"/>
+        <line num="81" count="6" type="stmt"/>
+      </file>
+    </package>
+    <package name="components.portfolio">
+      <metrics statements="92" coveredstatements="81" conditionals="140" coveredconditionals="95" methods="54" coveredmethods="49"/>
+      <file name="LotTable.tsx" path="/Users/cynthiachuang/Justin_Dev/Finance_Dashboard/components/portfolio/LotTable.tsx">
+        <metrics statements="48" coveredstatements="47" conditionals="66" coveredconditionals="46" methods="31" coveredmethods="30"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="20" count="46" type="stmt"/>
+        <line num="23" count="14" type="stmt"/>
+        <line num="27" count="31" type="stmt"/>
+        <line num="28" count="31" type="cond" truecount="1" falsecount="1"/>
+        <line num="31" count="31" type="stmt"/>
+        <line num="32" count="31" type="cond" truecount="1" falsecount="1"/>
+        <line num="36" count="18" type="stmt"/>
+        <line num="39" count="18" type="stmt"/>
+        <line num="40" count="18" type="stmt"/>
+        <line num="41" count="16" type="cond" truecount="2" falsecount="0"/>
+        <line num="42" count="16" type="cond" truecount="1" falsecount="1"/>
+        <line num="43" count="16" type="stmt"/>
+        <line num="47" count="36" type="stmt"/>
+        <line num="48" count="16" type="cond" truecount="3" falsecount="1"/>
+        <line num="51" count="18" type="stmt"/>
+        <line num="53" count="18" type="stmt"/>
+        <line num="55" count="2" type="stmt"/>
+        <line num="56" count="2" type="stmt"/>
+        <line num="57" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="58" count="2" type="stmt"/>
+        <line num="62" count="18" type="stmt"/>
+        <line num="64" count="18" type="stmt"/>
+        <line num="72" count="2" type="stmt"/>
+        <line num="78" count="1" type="stmt"/>
+        <line num="84" count="0" type="stmt"/>
+        <line num="116" count="16" type="cond" truecount="1" falsecount="1"/>
+        <line num="117" count="16" type="cond" truecount="1" falsecount="1"/>
+        <line num="119" count="16" type="stmt"/>
+        <line num="138" count="16" type="cond" truecount="1" falsecount="1"/>
+        <line num="140" count="17" type="stmt"/>
+        <line num="141" count="17" type="stmt"/>
+        <line num="142" count="17" type="stmt"/>
+        <line num="143" count="17" type="stmt"/>
+        <line num="145" count="16" type="cond" truecount="1" falsecount="1"/>
+        <line num="146" count="16" type="cond" truecount="1" falsecount="1"/>
+        <line num="148" count="16" type="stmt"/>
+        <line num="153" count="2" type="stmt"/>
+        <line num="177" count="1" type="stmt"/>
+        <line num="179" count="1" type="stmt"/>
+        <line num="189" count="14" type="stmt"/>
+        <line num="190" count="14" type="stmt"/>
+        <line num="191" count="14" type="cond" truecount="2" falsecount="0"/>
+        <line num="192" count="14" type="cond" truecount="1" falsecount="1"/>
+        <line num="193" count="14" type="cond" truecount="1" falsecount="1"/>
+        <line num="195" count="14" type="stmt"/>
+        <line num="237" count="1" type="stmt"/>
+        <line num="244" count="1" type="stmt"/>
+      </file>
+      <file name="PositionTable.tsx" path="/Users/cynthiachuang/Justin_Dev/Finance_Dashboard/components/portfolio/PositionTable.tsx">
+        <metrics statements="44" coveredstatements="34" conditionals="74" coveredconditionals="49" methods="23" coveredmethods="19"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="24" count="26" type="stmt"/>
+        <line num="27" count="26" type="stmt"/>
+        <line num="32" count="22" type="cond" truecount="1" falsecount="1"/>
+        <line num="33" count="22" type="cond" truecount="1" falsecount="1"/>
+        <line num="34" count="0" type="stmt"/>
+        <line num="41" count="22" type="cond" truecount="1" falsecount="1"/>
+        <line num="44" count="22" type="stmt"/>
+        <line num="54" count="2" type="cond" truecount="1" falsecount="1"/>
+        <line num="55" count="0" type="stmt"/>
+        <line num="62" count="2" type="cond" truecount="1" falsecount="1"/>
+        <line num="65" count="2" type="stmt"/>
+        <line num="77" count="6" type="cond" truecount="1" falsecount="1"/>
+        <line num="78" count="2" type="stmt"/>
+        <line num="79" count="2" type="cond" truecount="1" falsecount="1"/>
+        <line num="81" count="2" type="cond" truecount="1" falsecount="1"/>
+        <line num="82" count="0" type="stmt"/>
+        <line num="90" count="2" type="cond" truecount="1" falsecount="1"/>
+        <line num="91" count="0" type="stmt"/>
+        <line num="98" count="2" type="stmt"/>
+        <line num="115" count="13" type="stmt"/>
+        <line num="117" count="13" type="stmt"/>
+        <line num="118" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="119" count="0" type="stmt"/>
+        <line num="120" count="0" type="stmt"/>
+        <line num="123" count="13" type="stmt"/>
+        <line num="127" count="0" type="stmt"/>
+        <line num="129" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="150" count="17" type="stmt"/>
+        <line num="152" count="17" type="stmt"/>
+        <line num="154" count="2" type="stmt"/>
+        <line num="155" count="2" type="stmt"/>
+        <line num="156" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="157" count="2" type="stmt"/>
+        <line num="161" count="17" type="stmt"/>
+        <line num="176" count="2" type="stmt"/>
+        <line num="182" count="1" type="stmt"/>
+        <line num="218" count="13" type="stmt"/>
+        <line num="219" count="13" type="stmt"/>
+        <line num="225" count="2" type="stmt"/>
+        <line num="250" count="0" type="stmt"/>
+        <line num="302" count="10" type="stmt"/>
+        <line num="349" count="1" type="stmt"/>
+        <line num="356" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="hooks">
+      <metrics statements="138" coveredstatements="88" conditionals="118" coveredconditionals="51" methods="56" coveredmethods="36"/>
+      <file name="useCryptoPrices.ts" path="/Users/cynthiachuang/Justin_Dev/Finance_Dashboard/hooks/useCryptoPrices.ts">
+        <metrics statements="19" coveredstatements="2" conditionals="20" coveredconditionals="0" methods="6" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="11" count="1" type="stmt"/>
+        <line num="12" count="0" type="stmt"/>
+        <line num="13" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="14" count="0" type="stmt"/>
+        <line num="18" count="0" type="stmt"/>
+        <line num="23" count="0" type="stmt"/>
+        <line num="26" count="0" type="stmt"/>
+        <line num="27" count="0" type="stmt"/>
+        <line num="28" count="0" type="stmt"/>
+        <line num="31" count="0" type="stmt"/>
+        <line num="39" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="40" count="0" type="stmt"/>
+        <line num="46" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="48" count="0" type="stmt"/>
+        <line num="49" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="50" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="51" count="0" type="stmt"/>
+        <line num="60" count="0" type="stmt"/>
+      </file>
+      <file name="useExchangeRate.ts" path="/Users/cynthiachuang/Justin_Dev/Finance_Dashboard/hooks/useExchangeRate.ts">
+        <metrics statements="15" coveredstatements="10" conditionals="10" coveredconditionals="6" methods="7" coveredmethods="3"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="8" count="2" type="stmt"/>
+        <line num="9" count="0" type="stmt"/>
+        <line num="10" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="14" count="2" type="stmt"/>
+        <line num="23" count="6" type="stmt"/>
+        <line num="24" count="6" type="stmt"/>
+        <line num="25" count="5" type="stmt"/>
+        <line num="28" count="6" type="stmt"/>
+        <line num="36" count="0" type="stmt"/>
+        <line num="37" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="43" count="6" type="stmt"/>
+        <line num="44" count="6" type="cond" truecount="3" falsecount="0"/>
+        <line num="46" count="6" type="stmt"/>
+      </file>
+      <file name="usePortfolioValuation.ts" path="/Users/cynthiachuang/Justin_Dev/Finance_Dashboard/hooks/usePortfolioValuation.ts">
+        <metrics statements="72" coveredstatements="72" conditionals="58" coveredconditionals="45" methods="33" coveredmethods="33"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="12" count="5" type="cond" truecount="1" falsecount="1"/>
+        <line num="16" count="14" type="cond" truecount="4" falsecount="0"/>
+        <line num="18" count="5" type="stmt"/>
+        <line num="19" count="5" type="stmt"/>
+        <line num="21" count="4" type="stmt"/>
+        <line num="22" count="4" type="stmt"/>
+        <line num="24" count="4" type="cond" truecount="1" falsecount="1"/>
+        <line num="27" count="4" type="stmt"/>
+        <line num="28" count="4" type="stmt"/>
+        <line num="30" count="4" type="stmt"/>
+        <line num="40" count="14" type="stmt"/>
+        <line num="42" count="14" type="stmt"/>
+        <line num="43" count="14" type="stmt"/>
+        <line num="44" count="3" type="cond" truecount="1" falsecount="1"/>
+        <line num="45" count="3" type="stmt"/>
+        <line num="49" count="14" type="stmt"/>
+        <line num="51" count="14" type="stmt"/>
+        <line num="52" count="14" type="stmt"/>
+        <line num="53" count="8" type="stmt"/>
+        <line num="54" count="8" type="stmt"/>
+        <line num="58" count="14" type="stmt"/>
+        <line num="60" count="14" type="stmt"/>
+        <line num="61" count="14" type="stmt"/>
+        <line num="62" count="1" type="cond" truecount="2" falsecount="0"/>
+        <line num="63" count="1" type="stmt"/>
+        <line num="68" count="14" type="stmt"/>
+        <line num="69" count="14" type="stmt"/>
+        <line num="70" count="14" type="stmt"/>
+        <line num="71" count="14" type="stmt"/>
+        <line num="73" count="14" type="cond" truecount="4" falsecount="0"/>
+        <line num="76" count="14" type="stmt"/>
+        <line num="77" count="14" type="stmt"/>
+        <line num="78" count="14" type="stmt"/>
+        <line num="79" count="14" type="stmt"/>
+        <line num="80" count="14" type="stmt"/>
+        <line num="81" count="14" type="stmt"/>
+        <line num="85" count="14" type="stmt"/>
+        <line num="86" count="14" type="stmt"/>
+        <line num="88" count="14" type="cond" truecount="4" falsecount="0"/>
+        <line num="89" count="2" type="cond" truecount="1" falsecount="1"/>
+        <line num="90" count="2" type="cond" truecount="1" falsecount="1"/>
+        <line num="91" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="92" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="93" count="2" type="stmt"/>
+        <line num="94" count="2" type="stmt"/>
+        <line num="98" count="12" type="stmt"/>
+        <line num="99" count="12" type="cond" truecount="1" falsecount="1"/>
+        <line num="100" count="14" type="cond" truecount="1" falsecount="1"/>
+        <line num="101" count="14" type="cond" truecount="1" falsecount="1"/>
+        <line num="102" count="14" type="stmt"/>
+        <line num="105" count="14" type="cond" truecount="2" falsecount="0"/>
+        <line num="107" count="14" type="cond" truecount="2" falsecount="0"/>
+        <line num="108" count="14" type="stmt"/>
+        <line num="110" count="14" type="stmt"/>
+        <line num="113" count="14" type="stmt"/>
+        <line num="114" count="14" type="stmt"/>
+        <line num="116" count="14" type="stmt"/>
+        <line num="117" count="14" type="cond" truecount="1" falsecount="1"/>
+        <line num="120" count="14" type="stmt"/>
+        <line num="123" count="14" type="stmt"/>
+        <line num="124" count="14" type="stmt"/>
+        <line num="125" count="70" type="cond" truecount="2" falsecount="0"/>
+        <line num="126" count="70" type="stmt"/>
+        <line num="127" count="70" type="stmt"/>
+        <line num="128" count="70" type="cond" truecount="2" falsecount="0"/>
+        <line num="130" count="70" type="stmt"/>
+        <line num="131" count="70" type="cond" truecount="3" falsecount="1"/>
+        <line num="132" count="70" type="cond" truecount="3" falsecount="1"/>
+        <line num="133" count="70" type="cond" truecount="3" falsecount="1"/>
+        <line num="135" count="70" type="stmt"/>
+        <line num="151" count="14" type="stmt"/>
+      </file>
+      <file name="useTaiwanStocks.ts" path="/Users/cynthiachuang/Justin_Dev/Finance_Dashboard/hooks/useTaiwanStocks.ts">
+        <metrics statements="16" coveredstatements="2" conditionals="16" coveredconditionals="0" methods="5" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="11" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="12" count="0" type="stmt"/>
+        <line num="21" count="0" type="cond" truecount="0" falsecount="4"/>
+        <line num="27" count="0" type="stmt"/>
+        <line num="28" count="0" type="stmt"/>
+        <line num="29" count="0" type="stmt"/>
+        <line num="30" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="33" count="0" type="stmt"/>
+        <line num="38" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="39" count="0" type="stmt"/>
+        <line num="40" count="0" type="stmt"/>
+        <line num="41" count="0" type="stmt"/>
+        <line num="46" count="0" type="stmt"/>
+      </file>
+      <file name="useUSStocks.ts" path="/Users/cynthiachuang/Justin_Dev/Finance_Dashboard/hooks/useUSStocks.ts">
+        <metrics statements="16" coveredstatements="2" conditionals="14" coveredconditionals="0" methods="5" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="11" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="12" count="0" type="stmt"/>
+        <line num="17" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="22" count="0" type="stmt"/>
+        <line num="23" count="0" type="stmt"/>
+        <line num="24" count="0" type="stmt"/>
+        <line num="25" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="28" count="0" type="stmt"/>
+        <line num="33" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="34" count="0" type="stmt"/>
+        <line num="35" count="0" type="stmt"/>
+        <line num="36" count="0" type="stmt"/>
+        <line num="41" count="0" type="stmt"/>
+      </file>
+    </package>
+    <package name="lib">
+      <metrics statements="125" coveredstatements="119" conditionals="121" coveredconditionals="101" methods="37" coveredmethods="36"/>
+      <file name="colors.ts" path="/Users/cynthiachuang/Justin_Dev/Finance_Dashboard/lib/colors.ts">
+        <metrics statements="6" coveredstatements="6" conditionals="14" coveredconditionals="14" methods="2" coveredmethods="2"/>
+        <line num="10" count="18" type="cond" truecount="2" falsecount="0"/>
+        <line num="11" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="13" count="16" type="cond" truecount="2" falsecount="0"/>
+        <line num="23" count="11" type="cond" truecount="2" falsecount="0"/>
+        <line num="24" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="28" count="9" type="cond" truecount="2" falsecount="0"/>
+      </file>
+      <file name="constants.ts" path="/Users/cynthiachuang/Justin_Dev/Finance_Dashboard/lib/constants.ts">
+        <metrics statements="15" coveredstatements="15" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="4" count="4" type="stmt"/>
+        <line num="7" count="4" type="stmt"/>
+        <line num="10" count="4" type="stmt"/>
+        <line num="12" count="4" type="stmt"/>
+        <line num="19" count="4" type="stmt"/>
+        <line num="20" count="12" type="stmt"/>
+        <line num="24" count="4" type="stmt"/>
+        <line num="35" count="4" type="stmt"/>
+        <line num="38" count="4" type="stmt"/>
+        <line num="44" count="4" type="stmt"/>
+        <line num="52" count="4" type="stmt"/>
+        <line num="61" count="4" type="stmt"/>
+        <line num="64" count="4" type="stmt"/>
+        <line num="76" count="4" type="stmt"/>
+        <line num="88" count="4" type="stmt"/>
+      </file>
+      <file name="formatters.ts" path="/Users/cynthiachuang/Justin_Dev/Finance_Dashboard/lib/formatters.ts">
+        <metrics statements="12" coveredstatements="12" conditionals="18" coveredconditionals="18" methods="3" coveredmethods="3"/>
+        <line num="2" count="30" type="cond" truecount="2" falsecount="0"/>
+        <line num="3" count="9" type="stmt"/>
+        <line num="9" count="21" type="cond" truecount="4" falsecount="0"/>
+        <line num="10" count="30" type="stmt"/>
+        <line num="19" count="14" type="cond" truecount="2" falsecount="0"/>
+        <line num="20" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="21" count="3" type="stmt"/>
+        <line num="23" count="11" type="cond" truecount="2" falsecount="0"/>
+        <line num="24" count="14" type="cond" truecount="2" falsecount="0"/>
+        <line num="25" count="14" type="stmt"/>
+        <line num="29" count="10" type="cond" truecount="2" falsecount="0"/>
+        <line num="30" count="10" type="stmt"/>
+      </file>
+      <file name="portfolio.ts" path="/Users/cynthiachuang/Justin_Dev/Finance_Dashboard/lib/portfolio.ts">
+        <metrics statements="69" coveredstatements="64" conditionals="55" coveredconditionals="41" methods="27" coveredmethods="26"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="9" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="12" count="0" type="stmt"/>
+        <line num="16" count="8" type="cond" truecount="1" falsecount="1"/>
+        <line num="17" count="8" type="stmt"/>
+        <line num="18" count="8" type="stmt"/>
+        <line num="19" count="8" type="cond" truecount="2" falsecount="0"/>
+        <line num="20" count="7" type="stmt"/>
+        <line num="21" count="7" type="cond" truecount="2" falsecount="0"/>
+        <line num="23" count="1" type="stmt"/>
+        <line num="28" count="22" type="cond" truecount="1" falsecount="1"/>
+        <line num="29" count="22" type="stmt"/>
+        <line num="33" count="16" type="stmt"/>
+        <line num="40" count="12" type="stmt"/>
+        <line num="41" count="12" type="stmt"/>
+        <line num="42" count="12" type="stmt"/>
+        <line num="43" count="12" type="stmt"/>
+        <line num="51" count="2" type="stmt"/>
+        <line num="52" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="54" count="2" type="stmt"/>
+        <line num="55" count="2" type="stmt"/>
+        <line num="62" count="2" type="stmt"/>
+        <line num="63" count="2" type="stmt"/>
+        <line num="64" count="2" type="stmt"/>
+        <line num="69" count="2" type="cond" truecount="1" falsecount="1"/>
+        <line num="70" count="2" type="stmt"/>
+        <line num="71" count="2" type="stmt"/>
+        <line num="72" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="73" count="1" type="stmt"/>
+        <line num="74" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="76" count="5" type="stmt"/>
+        <line num="77" count="5" type="cond" truecount="1" falsecount="1"/>
+        <line num="79" count="0" type="stmt"/>
+        <line num="84" count="2" type="cond" truecount="1" falsecount="1"/>
+        <line num="85" count="2" type="stmt"/>
+        <line num="93" count="2" type="stmt"/>
+        <line num="94" count="10" type="cond" truecount="2" falsecount="0"/>
+        <line num="96" count="2" type="stmt"/>
+        <line num="97" count="2" type="stmt"/>
+        <line num="106" count="4" type="stmt"/>
+        <line num="107" count="4" type="stmt"/>
+        <line num="108" count="4" type="cond" truecount="1" falsecount="1"/>
+        <line num="112" count="4" type="stmt"/>
+        <line num="113" count="4" type="stmt"/>
+        <line num="122" count="1" type="stmt"/>
+        <line num="123" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="127" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="132" count="1" type="stmt"/>
+        <line num="133" count="1" type="stmt"/>
+        <line num="141" count="1" type="stmt"/>
+        <line num="142" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="143" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="146" count="1" type="stmt"/>
+        <line num="147" count="1" type="stmt"/>
+        <line num="156" count="2" type="stmt"/>
+        <line num="166" count="5" type="stmt"/>
+        <line num="167" count="5" type="stmt"/>
+        <line num="168" count="5" type="cond" truecount="4" falsecount="0"/>
+        <line num="170" count="3" type="stmt"/>
+        <line num="172" count="4" type="cond" truecount="6" falsecount="0"/>
+        <line num="179" count="3" type="stmt"/>
+        <line num="181" count="15" type="cond" truecount="3" falsecount="0"/>
+        <line num="185" count="3" type="cond" truecount="4" falsecount="0"/>
+        <line num="186" count="5" type="stmt"/>
+        <line num="188" count="1" type="stmt"/>
+      </file>
+      <file name="priceCache.ts" path="/Users/cynthiachuang/Justin_Dev/Finance_Dashboard/lib/priceCache.ts">
+        <metrics statements="9" coveredstatements="8" conditionals="6" coveredconditionals="4" methods="2" coveredmethods="2"/>
+        <line num="7" count="2" type="stmt"/>
+        <line num="15" count="5" type="cond" truecount="1" falsecount="1"/>
+        <line num="16" count="5" type="stmt"/>
+        <line num="17" count="5" type="stmt"/>
+        <line num="18" count="5" type="cond" truecount="2" falsecount="0"/>
+        <line num="20" count="0" type="stmt"/>
+        <line num="25" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="26" count="1" type="stmt"/>
+        <line num="27" count="1" type="stmt"/>
+      </file>
+      <file name="settings.ts" path="/Users/cynthiachuang/Justin_Dev/Finance_Dashboard/lib/settings.ts">
+        <metrics statements="14" coveredstatements="14" conditionals="28" coveredconditionals="24" methods="2" coveredmethods="2"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="13" count="2" type="stmt"/>
+        <line num="26" count="7" type="cond" truecount="1" falsecount="1"/>
+        <line num="27" count="7" type="stmt"/>
+        <line num="28" count="7" type="stmt"/>
+        <line num="29" count="7" type="cond" truecount="2" falsecount="0"/>
+        <line num="30" count="6" type="stmt"/>
+        <line num="32" count="6" type="stmt"/>
+        <line num="50" count="1" type="stmt"/>
+        <line num="54" count="2" type="stmt"/>
+        <line num="57" count="3" type="cond" truecount="1" falsecount="1"/>
+        <line num="58" count="3" type="stmt"/>
+        <line num="60" count="3" type="stmt"/>
+      </file>
+    </package>
+  </project>
+</coverage>

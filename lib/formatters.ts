@@ -29,3 +29,13 @@ export function formatPercent(percent: number): string {
   const prefix = percent >= 0 ? '+' : '';
   return `${prefix}${percent.toFixed(2)}%`;
 }
+
+/** Compact USD formatter for table cells: $1,234.56 */
+export function fmtUSD(v: number): string {
+  return `$${v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
+/** Compact TWD formatter for table cells: NT$32,500 */
+export function fmtTWD(v: number): string {
+  return `NT$${Math.round(v).toLocaleString()}`;
+}

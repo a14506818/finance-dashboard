@@ -3,6 +3,7 @@
 import type { CategorySummary } from '@/lib/types';
 import { CATEGORY_COLORS, AMOUNT_MASK } from '@/lib/constants';
 import { gainColor } from '@/lib/colors';
+import { fmtUSD, fmtTWD } from '@/lib/formatters';
 
 interface PortfolioSummaryProps {
   categorySummaries: CategorySummary[];
@@ -57,13 +58,6 @@ function DonutChart({ summaries }: { summaries: CategorySummary[] }) {
       })}
     </svg>
   );
-}
-
-function fmtUSD(v: number) {
-  return `$${v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-}
-function fmtTWD(v: number) {
-  return `NT$${Math.round(v).toLocaleString()}`;
 }
 
 export function PortfolioSummary({

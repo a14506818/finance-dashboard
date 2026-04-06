@@ -1,9 +1,11 @@
 'use client';
 
-import { Fragment, useState } from 'react';
+import { Fragment } from 'react';
 import { Trash2, Plus, Pencil, ChevronDown, ChevronRight } from 'lucide-react';
 import type { Position, Transaction, CategoryConfig } from '@/lib/types';
 import { AMOUNT_MASK, CATEGORY_COLORS } from '@/lib/constants';
+import { fmtUSD, fmtTWD } from '@/lib/formatters';
+import { useToggleSet } from '@/hooks/useToggleSet';
 
 interface LotTableProps {
   positions: Position[];
@@ -14,13 +16,6 @@ interface LotTableProps {
   onAdd: (positionId?: string) => void;
   onEdit: (positionId: string, lot: Transaction) => void;
   onDelete: (positionId: string, lotId: string) => void;
-}
-
-function fmtUSD(v: number) {
-  return `$${v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-}
-function fmtTWD(v: number) {
-  return `NT$${Math.round(v).toLocaleString()}`;
 }
 
 function txAmountUSD(tx: Transaction, usdToTwd: number): number {
@@ -50,14 +45,7 @@ export function LotTable({ positions, categories, usdToTwd, preferredCurrency = 
 
   const hasAnyLots = visibleCategories.length > 0;
 
-  const [collapsedPositions, setCollapsedPositions] = useState<Set<string>>(new Set());
-  function togglePosition(posId: string) {
-    setCollapsedPositions((prev) => {
-      const next = new Set(prev);
-      next.has(posId) ? next.delete(posId) : next.add(posId);
-      return next;
-    });
-  }
+  const { set: collapsedPositions, toggle: togglePosition, setSet: setCollapsedPositions } = useToggleSet();
 
   const showTWD = preferredCurrency === 'TWD';
 
