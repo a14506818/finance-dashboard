@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import type { Position, CategoryConfig } from '@/lib/types';
+import { getEffectiveQuantity } from '../usePortfolioValuation';
 
 // Mock all sub-hooks
 vi.mock('../useCryptoPrices');
@@ -240,6 +241,93 @@ describe('category summaries', () => {
     const cat = result.current.categorySummaries.find((c) => c.market === 'crypto')!;
     expect(cat.categoryCostBasis).toBeUndefined();
     expect(cat.categoryUnrealizedPL).toBeUndefined();
+  });
+});
+
+// ─── getEffectiveQuantity ─────────────────────────────────────────────────────
+
+describe('getEffectiveQuantity', () => {
+  it('returns position.quantity when no lots exist (backward compat)', () => {
+    const pos: Position = { id: 'p1', symbol: 'BTC', market: 'crypto', quantity: 5 };
+    expect(getEffectiveQuantity(pos)).toBe(5);
+  });
+
+  it('returns position.quantity when lots array is empty', () => {
+    const pos: Position = { id: 'p1', symbol: 'BTC', market: 'crypto', quantity: 5, lots: [] };
+    expect(getEffectiveQuantity(pos)).toBe(5);
+  });
+
+  it('derives quantity from lots (buy only)', () => {
+    const pos: Position = {
+      id: 'p1', symbol: 'ADA', market: 'crypto', quantity: 0,
+      lots: [
+        { id: 'l1', type: 'buy', quantity: 600, price: 0.5, currency: 'USD' },
+        { id: 'l2', type: 'buy', quantity: 400, price: 0.6, currency: 'USD' },
+      ],
+    };
+    expect(getEffectiveQuantity(pos)).toBe(1000);
+  });
+
+  it('subtracts sell lots from buy lots', () => {
+    const pos: Position = {
+      id: 'p1', symbol: 'ADA', market: 'crypto', quantity: 0,
+      lots: [
+        { id: 'l1', type: 'buy',  quantity: 1000, price: 0.5, currency: 'USD' },
+        { id: 'l2', type: 'sell', quantity: 300,  price: 0.7, currency: 'USD' },
+      ],
+    };
+    expect(getEffectiveQuantity(pos)).toBe(700);
+  });
+
+  it('adds adjustedQuantity (staking rewards) on top of lots quantity', () => {
+    const pos: Position = {
+      id: 'p1', symbol: 'ADA', market: 'crypto', quantity: 0,
+      adjustedQuantity: 5,
+      lots: [{ id: 'l1', type: 'buy', quantity: 1000, price: 0.5, currency: 'USD' }],
+    };
+    expect(getEffectiveQuantity(pos)).toBe(1005);
+  });
+
+  it('handles negative adjustedQuantity (fee consumption)', () => {
+    const pos: Position = {
+      id: 'p1', symbol: 'ADA', market: 'crypto', quantity: 0,
+      adjustedQuantity: -2,
+      lots: [{ id: 'l1', type: 'buy', quantity: 1000, price: 0.5, currency: 'USD' }],
+    };
+    expect(getEffectiveQuantity(pos)).toBe(998);
+  });
+
+  it('uses lots-derived quantity in valuation (not position.quantity)', () => {
+    mockUS.mockReturnValue({
+      stocks: [{ symbol: 'AAPL', name: 'Apple', price: 200, currency: 'USD', change: 0, changePercent: 0, marketClosed: false }],
+      isLoading: false,
+      error: undefined,
+    });
+
+    const positions: Position[] = [{
+      id: 'p1', symbol: 'AAPL', market: 'us', quantity: 999, // stale/wrong quantity
+      lots: [{ id: 'l1', type: 'buy', quantity: 10, price: 150, currency: 'USD' }],
+    }];
+    const { result } = renderHook(() => usePortfolioValuation(positions, defaultCategories));
+    // Should use lots-derived qty (10), not position.quantity (999)
+    expect(result.current.items[0].valuation).toBe(10 * 200); // 2000
+  });
+
+  it('uses lots + adjustedQuantity in valuation', () => {
+    mockUS.mockReturnValue({
+      stocks: [{ symbol: 'AAPL', name: 'Apple', price: 200, currency: 'USD', change: 0, changePercent: 0, marketClosed: false }],
+      isLoading: false,
+      error: undefined,
+    });
+
+    const positions: Position[] = [{
+      id: 'p1', symbol: 'AAPL', market: 'us', quantity: 0,
+      adjustedQuantity: 0.5,
+      lots: [{ id: 'l1', type: 'buy', quantity: 10, price: 150, currency: 'USD' }],
+    }];
+    const { result } = renderHook(() => usePortfolioValuation(positions, defaultCategories));
+    // 10 + 0.5 = 10.5 shares
+    expect(result.current.items[0].valuation).toBe(10.5 * 200); // 2100
   });
 });
 

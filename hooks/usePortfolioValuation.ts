@@ -12,6 +12,20 @@ function toUSD(amount: number, currency: 'USD' | 'TWD', usdToTwd: number): numbe
   return currency === 'TWD' ? amount / usdToTwd : amount;
 }
 
+/**
+ * Returns the effective quantity for a position:
+ * - If the position has lots: sum(buy qty) - sum(sell qty) + adjustedQuantity
+ * - If no lots: fall back to position.quantity (backward compatibility)
+ */
+export function getEffectiveQuantity(pos: Position): number {
+  if (!pos.lots?.length) return pos.quantity;
+  const lotsQty = pos.lots.reduce(
+    (s, l) => s + (l.type === 'buy' ? l.quantity : -l.quantity),
+    0
+  );
+  return lotsQty + (pos.adjustedQuantity ?? 0);
+}
+
 function calcPL(pos: Position, valuation: number, usdToTwd: number) {
   if (!pos.lots?.length || pos.market === 'cash') return {};
 
@@ -99,7 +113,8 @@ export function usePortfolioValuation(positions: Position[], categories: Categor
       const price = entry?.price ?? 0;
       const currency = entry?.currency ?? 'USD';
       const name = entry?.name ?? pos.symbol;
-      const rawValue = pos.quantity * price;
+      const quantity = getEffectiveQuantity(pos);
+      const rawValue = quantity * price;
 
       // Normalize to USD for total
       const valuation = currency === 'TWD' ? rawValue / usdToTwd : rawValue;

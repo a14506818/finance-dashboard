@@ -45,9 +45,20 @@ export function PositionForm({ editing, onSave, onCancel }: PositionFormProps) {
     taiwan: settings.dashboardSymbols.taiwan,
   };
 
+  // Compute lots-derived quantity for the position being edited (if any)
+  const editingLotsQty = (editing?.lots?.length ?? 0) > 0
+    ? editing!.lots!.reduce((s, l) => s + (l.type === 'buy' ? l.quantity : -l.quantity), 0)
+    : null;
+
   const [market, setMarket]               = useState<MarketType>(editing?.market ?? 'crypto');
   const [symbol, setSymbol]               = useState(editing?.symbol ?? '');
+  // legacy quantity field (used when no lots exist)
   const [quantity, setQuantity]           = useState(editing?.quantity?.toString() ?? '');
+  // actual total field (used when lots exist — user inputs real account balance)
+  const [actualQuantity, setActualQuantity] = useState<string>(() => {
+    if (editingLotsQty === null) return '';
+    return (editingLotsQty + (editing?.adjustedQuantity ?? 0)).toString();
+  });
   const [manualValue, setManualValue]     = useState(editing?.manualValue?.toString() ?? '');
   const [manualCurrency, setManualCurrency] = useState<'USD' | 'TWD'>(editing?.manualCurrency ?? 'USD');
   const [category, setCategory]           = useState<MarketType>(editing?.category ?? 'manual');
@@ -55,9 +66,15 @@ export function PositionForm({ editing, onSave, onCancel }: PositionFormProps) {
 
   useEffect(() => {
     if (editing) {
+      const lotsQty = (editing.lots?.length ?? 0) > 0
+        ? editing.lots!.reduce((s, l) => s + (l.type === 'buy' ? l.quantity : -l.quantity), 0)
+        : null;
       setMarket(editing.market);
       setSymbol(editing.symbol);
       setQuantity(editing.quantity?.toString() ?? '');
+      setActualQuantity(lotsQty !== null
+        ? (lotsQty + (editing.adjustedQuantity ?? 0)).toString()
+        : '');
       setManualValue(editing.manualValue?.toString() ?? '');
       setManualCurrency(editing.manualCurrency ?? 'USD');
       setCategory(editing.category ?? 'manual');
@@ -75,7 +92,19 @@ export function PositionForm({ editing, onSave, onCancel }: PositionFormProps) {
       const extra = market === 'manual' ? { category } : {};
       onSave({ symbol: symbol.trim(), market, quantity: 1,
                manualValue: mv, manualCurrency, ...extra });
+    } else if (editing && editingLotsQty !== null) {
+      // Editing a position that already has lots — derive adjustedQuantity from actual total
+      if (!symbol.trim()) return;
+      const actualQty = parseFloat(actualQuantity);
+      const adjQty = isNaN(actualQty) ? 0 : actualQty - editingLotsQty;
+      onSave({
+        symbol: symbol.trim().toUpperCase(), market, quantity: editing.quantity,
+        adjustedQuantity: adjQty === 0 ? undefined : adjQty,
+        ...(market === 'taiwan' ? { twExchange } : {}),
+        lots: editing.lots,
+      });
     } else {
+      // New position, or editing a position without lots (backward compat)
       const qty = parseFloat(quantity);
       if (!symbol.trim() || isNaN(qty) || qty <= 0) return;
       onSave({ symbol: symbol.trim().toUpperCase(), market, quantity: qty,
@@ -203,23 +232,50 @@ export function PositionForm({ editing, onSave, onCancel }: PositionFormProps) {
         </div>
 
         {/* Quantity (non-manual) */}
-        {!isManualLike && (
+        {!isManualLike && editing && editingLotsQty !== null && (
+          // Editing a position that has lots: show actual total input
           <div className="space-y-1.5">
-            <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">數量</label>
-            <input type="number" value={quantity}
+            <label htmlFor="actual-quantity" className="text-sm font-medium text-zinc-700 dark:text-zinc-300">目前實際數量</label>
+            <input id="actual-quantity" type="number" value={actualQuantity}
+              onChange={(e) => setActualQuantity(e.target.value)}
+              placeholder="0.00" step="any"
+              className="w-full px-3 py-2 rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <p className="text-xs text-zinc-400 dark:text-zinc-500">
+              交易紀錄推算：{editingLotsQty.toLocaleString()}
+              {(() => {
+                const actualQty = parseFloat(actualQuantity);
+                const adj = isNaN(actualQty) ? 0 : actualQty - editingLotsQty;
+                if (Math.abs(adj) < 0.000001) return null;
+                return (
+                  <span className={adj > 0 ? 'text-emerald-500' : 'text-red-500'}>
+                    {' '}（{adj > 0 ? '+' : ''}{adj.toLocaleString(undefined, { maximumFractionDigits: 8 })} 利息/調整）
+                  </span>
+                );
+              })()}
+            </p>
+          </div>
+        )}
+        {!isManualLike && !(editing && editingLotsQty !== null) && (
+          // New position, or editing without lots (backward compat)
+          <div className="space-y-1.5">
+            <label htmlFor="position-quantity" className="text-sm font-medium text-zinc-700 dark:text-zinc-300">數量</label>
+            <input id="position-quantity" type="number" value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
               placeholder="0.00" step="any" min="0"
               className="w-full px-3 py-2 rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               required />
+            {!editing && (
+              <p className="text-xs text-zinc-400 dark:text-zinc-500">新增交易紀錄後，數量將由交易紀錄自動推算</p>
+            )}
           </div>
         )}
 
         {/* Manual/cash value + currency */}
         {isManualLike && (
           <div className="space-y-1.5">
-            <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">現值</label>
+            <label htmlFor="manual-value" className="text-sm font-medium text-zinc-700 dark:text-zinc-300">現值</label>
             <div className="flex gap-2">
-              <input type="number" value={manualValue}
+              <input id="manual-value" type="number" value={manualValue}
                 onChange={(e) => setManualValue(e.target.value)}
                 placeholder="0.00" step="any" min="0"
                 className="flex-1 px-3 py-2 rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"

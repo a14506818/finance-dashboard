@@ -67,6 +67,7 @@ export interface Position {
   category?: MarketType;             // manual only: override which category bucket to use
   twExchange?: 'tse' | 'otc';       // taiwan only: 上市(tse) or 上櫃(otc)
   lots?: Transaction[];              // transaction records (not used for cash)
+  adjustedQuantity?: number;        // rewards/interest adjustment: actual balance - lots-derived qty
 }
 
 export interface ValuatedPosition {

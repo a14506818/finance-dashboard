@@ -73,7 +73,7 @@ export default function PortfolioPage() {
       <div className="flex items-center gap-1 border-b border-zinc-200 dark:border-zinc-800">
         {([
           { key: 'positions', label: '倉位' },
-          { key: 'lots',      label: '買入紀錄' },
+          { key: 'lots',      label: '交易紀錄' },
         ] as { key: Tab; label: string }[]).map(({ key, label }) => (
           <button
             key={key}
